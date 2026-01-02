@@ -18,8 +18,6 @@
       --btn-red-hover: #b71c1c;
       --btn-pink: #ff6fb3;
       --btn-pink-hover: #ff4fa3;
-      --btn-gray: #666;
-      --btn-gray-hover: #444;
     }
 
     body {
@@ -54,39 +52,18 @@
     .btn-music { background: var(--btn-lightblue); color: #042a46; }
     .btn-music:hover { background: var(--btn-lightblue-hover); }
 
-    .btn-mini {
-      padding: 4px 8px;
-      font-size: 0.82rem;
-      border-radius: 6px;
-      background: var(--btn-gray);
-      color: #fff;
-      border: 1px solid transparent;
-    }
-    .btn-mini:hover { background: var(--btn-gray-hover); }
-    .btn-mini:disabled { opacity: 0.55; cursor: not-allowed; }
-
     .status-badge {
       padding: 2px 8px; background: #fff; border: 1px solid #ddd; border-radius: 8px;
       font-weight: 600; color: #333;
     }
 
     #optionsBar {
-      display: flex; align-items: flex-start; gap: var(--panel-gap); flex-wrap: wrap; margin-top: 8px; margin-bottom: 8px;
+      display: flex; align-items: flex-start; gap: var(--panel-gap); flex-wrap: wrap; margin-bottom: 8px;
     }
-
-    .panel {
-      background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: var(--panel-pad);
-      display: inline-flex; align-items: flex-start; gap: 10px;
-    }
-
-    .panel-inner { display: flex; flex-direction: column; gap: 6px; }
-
+    .panel { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: var(--panel-pad); display: inline-flex; align-items: center; gap: 10px; }
     .panel legend { font-weight: 700; font-size: 0.9rem; margin-right: 6px; }
     #exPanel { flex-basis: 100%; }
-
     .row  { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-
-    .panel-tools { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
     .chk-label {
       display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem;
@@ -123,7 +100,6 @@
       background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 4px; min-height: 200px;
       overflow-x: auto;
       overscroll-behavior-x: contain;
-      -webkit-overflow-scrolling: touch;
     }
 
     #svg { width: 100%; height: auto; }
@@ -157,59 +133,36 @@
     </div>
   </div>
 
-  <!-- MOVED UP: Title, then music -->
-  <div id="titleBar" aria-live="polite">Title: —</div>
-  <div id="viewer"><div id="svg"></div></div>
-
-  <!-- Options now come AFTER the music -->
   <div id="optionsBar">
     <fieldset class="panel" id="keysPanel">
       <legend>Key range</legend>
-      <div class="panel-inner">
-        <div class="row key-range" id="keysRangeRow"></div>
-        <div class="panel-tools">
-          <button class="btn-mini" type="button" id="keysAllBtn">check all</button>
-          <button class="btn-mini" type="button" id="keysNoneBtn">uncheck all</button>
-        </div>
-      </div>
+      <div class="row key-range" id="keysRangeRow"></div>
     </fieldset>
 
     <fieldset class="panel" id="exPanel">
       <legend>Exclude</legend>
-      <div class="panel-inner">
-        <div class="row" id="exRow"></div>
-        <div class="panel-tools">
-          <button class="btn-mini" type="button" id="exAllBtn">check all</button>
-          <button class="btn-mini" type="button" id="exNoneBtn">uncheck all</button>
-        </div>
-      </div>
+      <div class="row" id="exRow"></div>
     </fieldset>
 
     <fieldset class="panel" id="mmPanel">
       <legend>Major / Minor</legend>
-      <div class="panel-inner">
-        <div class="row" id="mmRow"></div>
-      </div>
+      <div class="row" id="mmRow"></div>
     </fieldset>
 
-    <fieldset class="panel" id="tsPanel">
-      <legend>Time signature</legend>
-      <div class="panel-inner">
-        <div class="row" id="tsRow"></div>
-      </div>
+    <fieldset class="panel" id="dtPanel">
+      <legend>Duple / Triple</legend>
+      <div class="row" id="dtRow"></div>
     </fieldset>
 
     <fieldset class="panel" id="colPanel">
       <legend>Collection</legend>
-      <div class="panel-inner">
-        <div class="row" id="colRow"></div>
-        <div class="panel-tools">
-          <button class="btn-mini" type="button" id="colAllBtn">check all</button>
-          <button class="btn-mini" type="button" id="colNoneBtn">uncheck all</button>
-        </div>
-      </div>
+      <div class="row" id="colRow"></div>
     </fieldset>
   </div>
+
+  <div id="titleBar" aria-live="polite">Title: —</div>
+
+  <div id="viewer"><div id="svg"></div></div>
 
   <footer><p>created for the University of Iowa Organ Studio</p></footer>
 
@@ -223,6 +176,8 @@
     const labelFor = k => k.replace(/#/g,"♯").replace(/b/g,"♭");
 
     const majorMinorVals = ["Major", "Minor"];
+    const dupleTripleVals = ["Duple", "Triple"];
+    const collectionVals  = ["Orgelbuchlein", "Hymnal 1982", "GH favorite"];
     const excludeTonics   = ["C","C#","Db","D","D#","Eb","E","F","F#","Gb","G","G#","Ab","A","Bb","B","Cb"];
 
     let vrvToolkit = null;
@@ -232,75 +187,62 @@
     let originalTonic = "";
     let octaveShift = 0;
 
+    // Enharmonic preference toggle (only affects C#/Db and F#/Gb)
     let preferFlats = false;
     const ENHARMONIC_MAP = { "C#":"Db", "Db":"C#", "F#":"Gb", "Gb":"F#" };
 
-    const originalMeiCache = {};
-    const metadataCache   = {};
+    const originalMeiCache = {};   // filename -> MEI text
+    const metadataCache   = {};    // filename -> parsed tags (with version)
 
-    const baseOptions = {
-      scale: 44,
-      pageWidth: 2200,
-      pageHeight: 2000,
-      adjustPageHeight: true,
-      pageMarginLeft: 20,
-      pageMarginRight: 20,
-      pageMarginTop: 24,
-      pageMarginBottom: 24,
-      spacingSystem: 10,
-      spacingStaff: 8,
-      spacingLinear: 0.16,
-      spacingNonLinear: 0.40,
-      minMeasureWidth: 44,
-      justifyVertically: false,
-      breaks: "auto",
-      spacingLyrics: 6
-    };
+    const MEI_NS = "http://www.music-encoding.org/ns/mei";
+    const METADATA_CACHE_VERSION = 3; // bumped for multi-collection support
 
+    // ------------------------------
+    // Namespace-safe helpers
+    // ------------------------------
+    function nodelistToArray(nl) { return Array.prototype.slice.call(nl || []); }
+    function allByTagNS(xml, tag) { return nodelistToArray(xml.getElementsByTagNameNS(MEI_NS, tag)); }
+    function firstByTagNS(xml, tag) {
+      const nl = xml.getElementsByTagNameNS(MEI_NS, tag);
+      return nl && nl.length ? nl[0] : null;
+    }
+
+    // ------------------------------
+    // Bounds & steps
+    // ------------------------------
     const SCALE_MIN = 30;
     const SCALE_MAX = 200;
+    const SCALE_STEP = 2;
 
     const SPACING_MIN = 0.08;
     const SPACING_MAX = 0.80;
+    const SPACING_STEP = 0.01;
 
     function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
 
     // ------------------------------
-    // UI helpers
+    // UI builders
     // ------------------------------
-    function clearContainer(containerId) {
-      const el = document.getElementById(containerId);
-      if (el) el.innerHTML = "";
-    }
-
-    function addPlainCheckboxes(containerId, values, defaultChecked = true) {
+    function addPlainCheckboxes(containerId, values) {
       const row = document.getElementById(containerId);
       values.forEach(val => {
         const id = `${containerId}_${String(val).replace(/[^A-Za-z0-9]/g,'_')}`;
         const label = document.createElement('label');
         label.className = 'chk-label';
         const cb = document.createElement('input');
-        cb.type = 'checkbox'; cb.id = id; cb.value = val; cb.checked = defaultChecked;
+        cb.type = 'checkbox'; cb.id = id; cb.value = val; cb.checked = true;
         const span = document.createElement('span');
         span.textContent = val;
         label.appendChild(cb); label.appendChild(span);
         row.appendChild(label);
       });
     }
-
-    function setAllCheckboxes(containerId, checked) {
-      document.querySelectorAll(`#${containerId} input[type="checkbox"]`).forEach(el => {
-        el.checked = !!checked;
-      });
-    }
-
     function getChecked(containerId) {
       const out = [];
       document.querySelectorAll(`#${containerId} input[type="checkbox"], #${containerId} input[type="radio"]`)
         .forEach(el => { if (el.checked) out.push(el.value); });
       return out;
     }
-
     function addAccidentalRangeButtons(containerId) {
       const row = document.getElementById(containerId);
       for (let n = 0; n <= 7; n++) {
@@ -316,7 +258,6 @@
         row.appendChild(btn);
       }
     }
-
     function addExcludeCheckboxes(containerId, values) {
       const row = document.getElementById(containerId);
       values.forEach(val => {
@@ -329,66 +270,6 @@
         label.appendChild(cb); label.appendChild(span);
         row.appendChild(label);
       });
-    }
-
-    // ------------------------------
-    // Dynamic panels
-    // ------------------------------
-    function timeSigSortKey(sig) {
-      const m = String(sig).match(/^(\d+)\s*\/\s*(\d+)$/);
-      if (!m) return [9999, 9999];
-      return [Number(m[1]), Number(m[2])];
-    }
-
-    async function buildTimeSigPanelFromTunes() {
-      clearContainer("tsRow");
-      if (!tuneFiles || tuneFiles.length === 0) return;
-
-      const set = new Set();
-      for (const f of tuneFiles) {
-        try {
-          const md = await getMetadata(f);
-          if (md?.timeSig) set.add(md.timeSig);
-        } catch (e) { /* ignore */ }
-      }
-
-      const vals = Array.from(set).sort((a, b) => {
-        const [ac, au] = timeSigSortKey(a);
-        const [bc, bu] = timeSigSortKey(b);
-        return (ac - bc) || (au - bu) || a.localeCompare(b);
-      });
-
-      if (vals.length === 0) {
-        const row = document.getElementById("tsRow");
-        if (row) row.textContent = "No meters found in MEI metadata.";
-        return;
-      }
-
-      addPlainCheckboxes("tsRow", vals, true);
-    }
-
-    async function buildCollectionPanelFromTunes() {
-      clearContainer("colRow");
-      if (!tuneFiles || tuneFiles.length === 0) return;
-
-      const set = new Set();
-      for (const f of tuneFiles) {
-        try {
-          const md = await getMetadata(f);
-          const c = (md?.collection || "").trim();
-          if (c) set.add(c);
-        } catch (e) { /* ignore */ }
-      }
-
-      const vals = Array.from(set).sort((a, b) => a.localeCompare(b));
-
-      if (vals.length === 0) {
-        const row = document.getElementById("colRow");
-        if (row) row.textContent = "No collections found in MEI metadata.";
-        return;
-      }
-
-      addPlainCheckboxes("colRow", vals, true);
     }
 
     // ------------------------------
@@ -409,7 +290,7 @@
     function parseCommentMetadataFromXml(xmlDoc) {
       if (!xmlDoc || !xmlDoc.documentElement) return null;
 
-      const meiRoot = xmlDoc.getElementsByTagName("mei")[0] || xmlDoc.documentElement;
+      const meiRoot = firstByTagNS(xmlDoc, "mei") || xmlDoc.documentElement;
       const walker = xmlDoc.createTreeWalker(meiRoot, NodeFilter.SHOW_COMMENT, null);
 
       const lines = [];
@@ -423,7 +304,7 @@
       }
       if (lines.length === 0) return null;
 
-      const md = { keyMode: "", keyTonic: "", timeSig: "", collection: "", title: "" };
+      const md = { keyMode: "", keyTonic: "", meterGroup: "", collection: "", collections: [], title: "" };
       for (const line of lines) {
         let mm = line.match(/^key\s*:\s*([A-Ga-g])([#bB])?\s+(major|minor)\s*$/i);
         if (mm) { md.keyTonic = mm[1].toUpperCase() + ((mm[2] || "").replace("B","b")); md.keyMode = mm[3].toLowerCase(); continue; }
@@ -434,83 +315,114 @@
         mm = line.match(/^keyMode\s*:\s*(major|minor)\s*$/i);
         if (mm) { md.keyMode = mm[1].toLowerCase(); continue; }
 
-        mm = line.match(/^timeSig\s*:\s*(\d+)\s*\/\s*(\d+)\s*$/i);
-        if (mm) { md.timeSig = `${mm[1]}/${mm[2]}`; continue; }
+        mm = line.match(/^meterGroup\s*:\s*(duple|triple)\s*$/i);
+        if (mm) { md.meterGroup = mm[1][0].toUpperCase() + mm[1].slice(1).toLowerCase(); continue; }
 
+        // allow multiple: collection: X / collection: Y
         mm = line.match(/^collection\s*:\s*(.+)$/i);
-        if (mm) { md.collection = mm[1].trim(); continue; }
+        if (mm) {
+          const c = mm[1].trim();
+          if (c) md.collections.push(c);
+          if (!md.collection && c) md.collection = c;
+          continue;
+        }
 
         mm = line.match(/^title\s*:\s*(.+)$/i);
         if (mm) { md.title = mm[1].trim(); continue; }
       }
 
-      const hasSomething = ["keyMode","keyTonic","timeSig","collection","title"].some(k => md[k]);
+      const hasSomething = ["keyMode","keyTonic","meterGroup","collection","title"].some(k => md[k]);
       return hasSomething ? md : null;
+    }
+
+    // ------------------------------
+    // Meter group from MEI
+    // ------------------------------
+    function meterGroupFromXml(xml) {
+      const meters = allByTagNS(xml, "meterSig");
+      const mSig = meters.length ? meters[0] : null;
+      const count = Number(mSig?.getAttribute("count") || "");
+      if (!Number.isFinite(count) || count <= 0) return "Duple";
+      if (count === 3) return "Triple";
+      if (count > 3 && count % 3 === 0) return "Triple";
+      return "Duple";
+    }
+
+    // ------------------------------
+    // ✅ NEW: read ALL collection identifiers
+    // ------------------------------
+    function collectionsFromXml(xml) {
+      const identifiers = allByTagNS(xml, "identifier");
+      return identifiers
+        .filter(el => (el.getAttribute("type") || "").toLowerCase() === "collection")
+        .map(el => (el.textContent || "").trim())
+        .filter(Boolean);
     }
 
     // ------------------------------
     // Metadata reader
     // ------------------------------
     async function getMetadata(fileName) {
-      if (metadataCache[fileName]) return metadataCache[fileName];
+      const cached = metadataCache[fileName];
+      if (cached && cached.__v === METADATA_CACHE_VERSION) return cached;
 
       const meiText = await fetchMei(fileName);
       const xml = new DOMParser().parseFromString(meiText, "application/xml");
 
       const fromComments = parseCommentMetadataFromXml(xml);
       if (fromComments) {
-        metadataCache[fileName] = fromComments;
+        if (!fromComments.meterGroup) fromComments.meterGroup = meterGroupFromXml(xml);
+
+        // ✅ NEW: if collections missing in comments, fill from XML identifiers (can be multiple)
+        if (!fromComments.collections || fromComments.collections.length === 0) {
+          fromComments.collections = collectionsFromXml(xml);
+          if (!fromComments.collection && fromComments.collections.length) {
+            fromComments.collection = fromComments.collections[0];
+          }
+        }
 
         if (!fromComments.title) {
-          const titleEl = xml.querySelector("titleStmt > title");
+          const titleEl = firstByTagNS(xml, "title");
           fromComments.title = (titleEl?.textContent || "").trim();
         }
 
-        if (!fromComments.timeSig) {
-          const mSig = xml.querySelector("scoreDef meterSig[count][unit], staffDef meterSig[count][unit], meterSig[count][unit]");
-          const mCount = (mSig?.getAttribute("count") || "").trim();
-          const mUnit  = (mSig?.getAttribute("unit")  || "").trim();
-          fromComments.timeSig = (mCount && mUnit) ? `${mCount}/${mUnit}` : "";
-        }
-
-        if (!fromComments.collection) {
-          const collEl = xml.querySelector('workDesc > work > identifier[type="collection"], identifier[type="collection"]');
-          fromComments.collection = (collEl?.textContent || "").trim();
-        }
-
-        return fromComments;
+        const out = { ...fromComments, __v: METADATA_CACHE_VERSION };
+        metadataCache[fileName] = out;
+        return out;
       }
 
-      const keyEl = xml.querySelector("workDesc > work > key");
+      const keys = allByTagNS(xml, "key");
+      const keyEl = keys.length ? keys[0] : null;
+
       const keyMode  = (keyEl?.getAttribute("mode")  || "").trim();
       const pname    = (keyEl?.getAttribute("pname") || "").trim().toLowerCase();
       const accid    = (keyEl?.getAttribute("accid") || "").trim().toLowerCase();
       const keyTonic = pname ? (pname.toUpperCase() + (accid === "s" ? "#" : accid === "f" ? "b" : "")) : "";
 
-      const collEl = xml.querySelector('workDesc > work > identifier[type="collection"], identifier[type="collection"]');
-      const collection = (collEl?.textContent || "").trim();
+      // ✅ NEW
+      const collections = collectionsFromXml(xml);
+      const collection  = collections.length ? collections[0] : "";
 
-      const mSig = xml.querySelector("scoreDef meterSig[count][unit], staffDef meterSig[count][unit], meterSig[count][unit]");
-      const mCount = (mSig?.getAttribute("count") || "").trim();
-      const mUnit  = (mSig?.getAttribute("unit")  || "").trim();
-      const timeSig = (mCount && mUnit) ? `${mCount}/${mUnit}` : "";
+      const meterGroup = meterGroupFromXml(xml);
 
-      const titleEl = xml.querySelector("titleStmt > title");
+      const titleEl = firstByTagNS(xml, "title");
       const title = (titleEl?.textContent || "").trim();
 
-      const md = { keyMode, keyTonic, collection, timeSig, title };
-      metadataCache[fileName] = md;
-      return md;
+      const out = { keyMode, keyTonic, collection, collections, meterGroup, title, __v: METADATA_CACHE_VERSION };
+      metadataCache[fileName] = out;
+      return out;
     }
 
     // ------------------------------
-    // Strip title (no-render)
+    // Strip MEI title
     // ------------------------------
     function stripMeiTitle(meiText) {
       try {
         const xml = new DOMParser().parseFromString(meiText, "application/xml");
-        const titleStmt = xml.querySelector("titleStmt");
-        if (titleStmt && titleStmt.parentNode) titleStmt.parentNode.removeChild(titleStmt);
+        const titleStmts = allByTagNS(xml, "titleStmt");
+        for (const ts of titleStmts) {
+          if (ts && ts.parentNode) ts.parentNode.removeChild(ts);
+        }
         return new XMLSerializer().serializeToString(xml);
       } catch (e) {
         console.warn("Failed to strip MEI title:", e);
@@ -585,7 +497,6 @@
       const pick = entry?.minor;
       if (!pick) return "C";
       if (pick.n === 0 && pick.t === "none") return "C";
-
       const found = Object.keys(KEY_SIG_BY_TONIC).find(K => {
         const maj = KEY_SIG_BY_TONIC[K]?.major;
         return maj && maj.n === pick.n && maj.t === pick.t;
@@ -597,7 +508,8 @@
       const { sig } = keySigFor(tonic, mode);
       const xml = new DOMParser().parseFromString(meiText, "application/xml");
 
-      xml.querySelectorAll("scoreDef, staffDef").forEach(el => {
+      const targets = [...allByTagNS(xml, "scoreDef"), ...allByTagNS(xml, "staffDef")];
+      targets.forEach(el => {
         if (el.hasAttribute("key.sig")) el.removeAttribute("key.sig");
         if (el.hasAttribute("keysig"))  el.removeAttribute("keysig");
 
@@ -656,8 +568,12 @@
     }
 
     function readInitialKeySigFromXml(xml) {
-      let sig = xml.querySelector("scoreDef[keysig], staffDef[keysig]")?.getAttribute("keysig") || "";
-      if (!sig) sig = xml.querySelector("scoreDef[key\\.sig], staffDef[key\\.sig]")?.getAttribute("key.sig") || "";
+      const scoreDefs = allByTagNS(xml, "scoreDef");
+      const staffDefs = allByTagNS(xml, "staffDef");
+      const first = scoreDefs[0] || staffDefs[0] || null;
+
+      let sig = "";
+      if (first) sig = first.getAttribute("keysig") || first.getAttribute("key.sig") || "";
 
       sig = (sig || "").trim();
       if (!sig || sig === "0") return { t: "none", n: 0 };
@@ -677,6 +593,9 @@
       return found || "";
     }
 
+    // ------------------------------
+    // Responsive page width
+    // ------------------------------
     function computeResponsivePageWidth() {
       const viewer = document.getElementById('viewer');
       const w = viewer.clientWidth;
@@ -690,7 +609,11 @@
         t = setTimeout(() => fn(...args), delay);
       };
     }
+    const onResize = debounce(() => { renderCurrent(); }, 150);
 
+    // ------------------------------
+    // Status badges
+    // ------------------------------
     function updateScaleBadge() {
       const badge = document.getElementById('scaleBadge');
       if (badge) badge.textContent = `Scale: ${baseOptions.scale}`;
@@ -705,6 +628,9 @@
       }
     }
 
+    // ------------------------------
+    // Controls
+    // ------------------------------
     function musicSizeChange(delta) {
       const next = clamp(baseOptions.scale + delta, SCALE_MIN, SCALE_MAX);
       if (next !== baseOptions.scale) {
@@ -725,6 +651,9 @@
       updateSpacingBadge();
     }
 
+    // ------------------------------
+    // Rendering
+    // ------------------------------
     async function renderCurrent() {
       if (!currentFile || !vrvToolkit) return;
 
@@ -778,12 +707,15 @@
       }
     }
 
+    // ------------------------------
+    // Filtering & selection
+    // ------------------------------
     async function pickRandomFilteredTune() {
       if (!tuneFiles || tuneFiles.length === 0) throw new Error("No tunes found.");
 
-      const mmSelected  = getChecked('mmRow');
-      const tsSelected  = getChecked('tsRow');
-      const colSelected = getChecked('colRow');
+      const mmSelected = getChecked('mmRow');
+      const dtSelected = getChecked('dtRow');
+      const colSelected= getChecked('colRow');
 
       const candidates = [];
       for (const f of tuneFiles) {
@@ -793,16 +725,20 @@
           const mmTag = (md.keyMode?.toLowerCase() === "minor") ? "Minor" : "Major";
           const mmOk  = mmSelected.length === 0 ? true : mmSelected.includes(mmTag);
 
-          const tsOk  = tsSelected.length === 0 ? true : tsSelected.includes(md.timeSig);
+          const dtOk  = dtSelected.length === 0 ? true : dtSelected.includes(md.meterGroup);
 
-          const col = (md.collection || "").trim();
-          const colOk = colSelected.length === 0 ? true : colSelected.includes(col);
+          // ✅ NEW: any-match against md.collections (fallback to md.collection)
+          const tuneCollections = (md.collections && md.collections.length) ? md.collections : (md.collection ? [md.collection] : []);
+          const colOk = colSelected.length === 0
+            ? true
+            : tuneCollections.some(c => colSelected.includes(c));
 
-          if (mmOk && tsOk && colOk) candidates.push(f);
+          if (mmOk && dtOk && colOk) candidates.push(f);
         } catch (e) {
           console.warn("Skipping unreadable MEI:", f, e);
         }
       }
+
       if (candidates.length === 0) throw new Error("No tunes match the selected tag filters.");
       return candidates[Math.floor(Math.random() * candidates.length)];
     }
@@ -823,7 +759,6 @@
         }
 
         let allowedTonics = tonicsByAccidentalsSelected(currentMode, accidentalsSelected);
-
         const excluded = new Set(getChecked('exRow'));
         allowedTonics = allowedTonics.filter(T => !excluded.has(T));
 
@@ -842,6 +777,9 @@
     async function octaveUp()   { octaveShift += 1; await renderCurrent(); }
     async function octaveDown() { octaveShift -= 1; await renderCurrent(); }
 
+    // ------------------------------
+    // Discover tunes
+    // ------------------------------
     async function discoverTunes() {
       try {
         const res = await fetch(`tunes.json?_=${Date.now()}`, { cache: 'no-cache' });
@@ -882,6 +820,9 @@
       console.warn('No tunes found (manifest missing and directory listing empty).');
     }
 
+    // ------------------------------
+    // Verovio loader (JS/WASM)
+    // ------------------------------
     function loadScript(src) {
       return new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -892,44 +833,18 @@
       });
     }
 
-    function wireCheckAllNone() {
-      const syncKeyRangeButtons = (checked) => {
-        if (checked) { for (let n = 0; n <= 7; n++) accidentalsSelected.add(n); }
-        else { accidentalsSelected.clear(); }
-
-        document.querySelectorAll('#keysRangeRow .range-btn').forEach(btn => {
-          const m = btn.textContent.match(/^(\d+)/);
-          const n = m ? Number(m[1]) : null;
-          if (n === null) return;
-          btn.classList.toggle('active', accidentalsSelected.has(n));
-        });
-      };
-
-      document.getElementById('keysAllBtn')?.addEventListener('click', () => syncKeyRangeButtons(true));
-      document.getElementById('keysNoneBtn')?.addEventListener('click', () => syncKeyRangeButtons(false));
-
-      document.getElementById('exAllBtn')?.addEventListener('click', () => setAllCheckboxes('exRow', true));
-      document.getElementById('exNoneBtn')?.addEventListener('click', () => setAllCheckboxes('exRow', false));
-
-      document.getElementById('colAllBtn')?.addEventListener('click', () => setAllCheckboxes('colRow', true));
-      document.getElementById('colNoneBtn')?.addEventListener('click', () => setAllCheckboxes('colRow', false));
-    }
-
+    // ------------------------------
+    // Init
+    // ------------------------------
     async function init() {
       addAccidentalRangeButtons("keysRangeRow");
       addExcludeCheckboxes("exRow", excludeTonics);
-      addPlainCheckboxes("mmRow", majorMinorVals, true);
-
-      wireCheckAllNone();
+      addPlainCheckboxes("mmRow", majorMinorVals);
+      addPlainCheckboxes("dtRow", dupleTripleVals);
+      addPlainCheckboxes("colRow", collectionVals);
 
       await discoverTunes();
-
-      if (!tuneFiles || tuneFiles.length === 0) {
-        setStatus("—", "No tunes found.", "");
-      } else {
-        await buildTimeSigPanelFromTunes();
-        await buildCollectionPanelFromTunes();
-      }
+      if (!tuneFiles || tuneFiles.length === 0) setStatus("—", "No tunes found.", "");
 
       const verovioUrl = 'https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js?v=latest';
       try { await loadScript(verovioUrl); }
@@ -966,18 +881,18 @@
             document.getElementById('octUpBtn').addEventListener('click',  octaveUp);
             document.getElementById('octDownBtn').addEventListener('click', octaveDown);
 
-            document.getElementById('spacingPlusBtn').addEventListener('click', () => spacingChange(+0.01));
-            document.getElementById('spacingMinusBtn').addEventListener('click', () => spacingChange(-0.01));
+            document.getElementById('spacingPlusBtn').addEventListener('click', () => spacingChange(+SPACING_STEP));
+            document.getElementById('spacingMinusBtn').addEventListener('click', () => spacingChange(-SPACING_STEP));
 
-            document.getElementById('musicPlusBtn').addEventListener('click', () => musicSizeChange(+2));
-            document.getElementById('musicMinusBtn').addEventListener('click', () => musicSizeChange(-2));
+            document.getElementById('musicPlusBtn').addEventListener('click', () => musicSizeChange(+SCALE_STEP));
+            document.getElementById('musicMinusBtn').addEventListener('click', () => musicSizeChange(-SCALE_STEP));
 
             document.getElementById('enharmonicBtn').addEventListener('click', () => {
               preferFlats = !preferFlats;
               renderCurrent();
             });
 
-            window.addEventListener('resize', debounce(() => { renderCurrent(); }, 150));
+            window.addEventListener('resize', debounce(() => renderCurrent(), 150));
 
             updateSpacingBadge();
             updateScaleBadge();
@@ -993,6 +908,28 @@
         console.error(err);
         setStatus("—", `Verovio not available: ${err.message}`, "");
       }
+    }
+
+    function updateScaleBadge() {
+      const badge = document.getElementById('scaleBadge');
+      if (badge) badge.textContent = `Scale: ${baseOptions.scale}`;
+    }
+    function updateSpacingBadge() {
+      const badge = document.getElementById('spacingBadge');
+      if (badge) {
+        const lin = baseOptions.spacingLinear.toFixed(2);
+        const non = baseOptions.spacingNonLinear.toFixed(2);
+        badge.textContent = `Spacing: ${lin} / ${non}`;
+        badge.title = `Linear: ${lin}, Non-linear: ${non}`;
+      }
+    }
+
+    function debounce(fn, delay = 120) {
+      let t = null;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), delay);
+      };
     }
 
     document.addEventListener('DOMContentLoaded', init);
