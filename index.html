@@ -1,0 +1,1005 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Random Hymn Tune</title>
+  <style>
+    :root {
+      --panel-gap: 8px;
+      --panel-pad: 8px;
+      --gold: #FFC600;
+      --gold-border: #d7a900;
+      --btn-blue: #0a64dc;
+      --btn-blue-hover: #084fb0;
+      --btn-lightblue: #5ab6ff;
+      --btn-lightblue-hover: #3fa8ff;
+      --btn-red: #d32f2f;
+      --btn-red-hover: #b71c1c;
+      --btn-pink: #ff6fb3;
+      --btn-pink-hover: #ff4fa3;
+      --btn-gray: #666;
+      --btn-gray-hover: #444;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      margin: 0; padding: 12px; background: #f7f7f9;
+    }
+
+    #controlsBar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;
+    }
+
+    .control-group {
+      display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+
+    button {
+      color: #fff; border: none; border-radius: 8px;
+      padding: 8px 12px; font-size: 0.95rem; cursor: pointer;
+      transition: background-color 120ms ease, opacity 120ms ease;
+    }
+    button[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-random { background: var(--btn-red); }
+    .btn-random:hover { background: var(--btn-red-hover); }
+
+    .btn-oct { background: var(--btn-pink); }
+    .btn-oct:hover { background: var(--btn-pink-hover); }
+
+    .btn-spacing { background: var(--btn-blue); }
+    .btn-spacing:hover { background: var(--btn-blue-hover); }
+
+    .btn-music { background: var(--btn-lightblue); color: #042a46; }
+    .btn-music:hover { background: var(--btn-lightblue-hover); }
+
+    .btn-mini {
+      padding: 4px 8px;
+      font-size: 0.82rem;
+      border-radius: 6px;
+      background: var(--btn-gray);
+      color: #fff;
+      border: 1px solid transparent;
+    }
+    .btn-mini:hover { background: var(--btn-gray-hover); }
+    .btn-mini:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .status-badge {
+      padding: 2px 8px; background: #fff; border: 1px solid #ddd; border-radius: 8px;
+      font-weight: 600; color: #333;
+    }
+
+    #optionsBar {
+      display: flex; align-items: flex-start; gap: var(--panel-gap); flex-wrap: wrap; margin-bottom: 8px;
+    }
+
+    .panel {
+      background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: var(--panel-pad);
+      display: inline-flex; align-items: flex-start; gap: 10px;
+    }
+
+    .panel-inner { display: flex; flex-direction: column; gap: 6px; }
+
+    .panel legend { font-weight: 700; font-size: 0.9rem; margin-right: 6px; }
+    #exPanel { flex-basis: 100%; }
+
+    .row  { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .panel-tools { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+    .chk-label {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem;
+      padding: 2px 6px; border-radius: 6px; border: 1px solid #ddd; background: #fff;
+      transition: background-color 120ms ease, border-color 120ms ease;
+    }
+    .chk-label input[type="checkbox"], .chk-label input[type="radio"] {
+      appearance: none; width: 14px; height: 14px; border-radius: 3px; border: 1px solid #666;
+      position: relative; margin-right: 2px; background: #fff;
+      transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    }
+    .chk-label input[type="checkbox"]::after, .chk-label input[type="radio"]::after {
+      content: ""; position: absolute; inset: 3px; border-radius: 2px; background: #333; opacity: 0; transition: opacity 120ms ease;
+    }
+    .chk-label input[type="checkbox"]:checked, .chk-label input[type="radio"]:checked {
+      background: var(--gold); border-color: var(--gold-border); box-shadow: 0 0 0 2px rgba(255, 198, 0, 0.25);
+    }
+    .chk-label input[type="checkbox"]:checked::after, .chk-label input[type="radio"]:checked::after { opacity: 1; }
+    .chk-label span { padding: 0 4px; border-radius: 4px; border: 1px solid transparent; color: #222; background: transparent; }
+
+    .key-range { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .key-range .range-btn {
+      padding: 4px 8px; font-size: 0.85rem; border-radius: 6px; background: #666; color: #fff; border: 1px solid transparent;
+    }
+    .key-range .range-btn:hover { background: #444; }
+    .key-range .range-btn.active { background: var(--gold); color: #222; border: 1px solid var(--gold-border); }
+
+    #titleBar {
+      background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 10px;
+      font-weight: 700; color: #333; margin: 4px 0 8px;
+    }
+
+    #viewer {
+      background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 4px; min-height: 200px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+    }
+
+    #svg { width: 100%; height: auto; }
+    #svg svg { display: block; }
+
+    footer { margin-top: 8px; color: #777; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div id="controlsBar">
+    <button id="randomBtn" class="btn-random" type="button" disabled>Show Random Tune</button>
+
+    <span id="statusTune" class="status-badge">File: —</span>
+    <span id="statusKey"  class="status-badge">Key: —</span>
+
+    <button id="octUpBtn"   class="btn-oct" type="button" disabled title="Transpose up 8va">8va↑</button>
+    <button id="octDownBtn" class="btn-oct" type="button" disabled title="Transpose down 8va">8va↓</button>
+
+    <button id="enharmonicBtn" class="btn-music" type="button" disabled title="Toggle Db/C# and Gb/F# spelling">♯/♭</button>
+
+    <div class="control-group" id="groupSpacing">
+      <button id="spacingPlusBtn"  class="btn-spacing" type="button" disabled title="Increase spacing between notes">spacing+</button>
+      <button id="spacingMinusBtn" class="btn-spacing" type="button" disabled title="Decrease spacing between notes">spacing−</button>
+      <span id="spacingBadge" class="status-badge" title="Current spacing (linear / non-linear)">Spacing: —</span>
+    </div>
+
+    <div class="control-group" id="groupScale">
+      <button id="musicPlusBtn"  class="btn-music" type="button" disabled title="Increase music size">Music+</button>
+      <button id="musicMinusBtn" class="btn-music" type="button" disabled title="Decrease music size">Music−</button>
+      <span id="scaleBadge" class="status-badge" title="Current engraving scale">Scale: —</span>
+    </div>
+  </div>
+
+  <div id="optionsBar">
+    <fieldset class="panel" id="keysPanel">
+      <legend>Key range</legend>
+      <div class="panel-inner">
+        <div class="row key-range" id="keysRangeRow"></div>
+        <div class="panel-tools">
+          <button class="btn-mini" type="button" id="keysAllBtn">check all</button>
+          <button class="btn-mini" type="button" id="keysNoneBtn">uncheck all</button>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="panel" id="exPanel">
+      <legend>Exclude</legend>
+      <div class="panel-inner">
+        <div class="row" id="exRow"></div>
+        <div class="panel-tools">
+          <button class="btn-mini" type="button" id="exAllBtn">check all</button>
+          <button class="btn-mini" type="button" id="exNoneBtn">uncheck all</button>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="panel" id="mmPanel">
+      <legend>Major / Minor</legend>
+      <div class="panel-inner">
+        <div class="row" id="mmRow"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="panel" id="tsPanel">
+      <legend>Time signature</legend>
+      <div class="panel-inner">
+        <div class="row" id="tsRow"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="panel" id="colPanel">
+      <legend>Collection</legend>
+      <div class="panel-inner">
+        <div class="row" id="colRow"></div>
+        <div class="panel-tools">
+          <button class="btn-mini" type="button" id="colAllBtn">check all</button>
+          <button class="btn-mini" type="button" id="colNoneBtn">uncheck all</button>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+
+  <div id="titleBar" aria-live="polite">Title: —</div>
+
+  <div id="viewer"><div id="svg"></div></div>
+
+  <footer><p>created for the University of Iowa Organ Studio</p></footer>
+
+  <script>
+    // ------------------------------
+    // Config & state
+    // ------------------------------
+    let tuneFiles = [];
+
+    const accidentalsSelected = new Set([1]); // default include 1 accidental
+    const labelFor = k => k.replace(/#/g,"♯").replace(/b/g,"♭");
+
+    const majorMinorVals = ["Major", "Minor"];
+    const excludeTonics   = ["C","C#","Db","D","D#","Eb","E","F","F#","Gb","G","G#","Ab","A","Bb","B","Cb"];
+
+    let vrvToolkit = null;
+    let currentFile = null;
+    let currentTargetKey = "";
+    let currentMode = "";
+    let originalTonic = "";
+    let octaveShift = 0;
+
+    let preferFlats = false;
+    const ENHARMONIC_MAP = { "C#":"Db", "Db":"C#", "F#":"Gb", "Gb":"F#" };
+
+    const originalMeiCache = {};
+    const metadataCache   = {};
+
+    const baseOptions = {
+      scale: 44,
+      pageWidth: 2200,
+      pageHeight: 2000,
+      adjustPageHeight: true,
+      pageMarginLeft: 20,
+      pageMarginRight: 20,
+      pageMarginTop: 24,
+      pageMarginBottom: 24,
+      spacingSystem: 10,
+      spacingStaff: 8,
+      spacingLinear: 0.16,
+      spacingNonLinear: 0.40,
+      minMeasureWidth: 44,
+      justifyVertically: false,
+      breaks: "auto",
+      spacingLyrics: 6
+    };
+
+    const SCALE_MIN = 30;
+    const SCALE_MAX = 200;
+
+    const SPACING_MIN = 0.08;
+    const SPACING_MAX = 0.80;
+
+    function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
+
+    // ------------------------------
+    // UI helpers
+    // ------------------------------
+    function clearContainer(containerId) {
+      const el = document.getElementById(containerId);
+      if (el) el.innerHTML = "";
+    }
+
+    function addPlainCheckboxes(containerId, values, defaultChecked = true) {
+      const row = document.getElementById(containerId);
+      values.forEach(val => {
+        const id = `${containerId}_${String(val).replace(/[^A-Za-z0-9]/g,'_')}`;
+        const label = document.createElement('label');
+        label.className = 'chk-label';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.id = id; cb.value = val; cb.checked = defaultChecked;
+        const span = document.createElement('span');
+        span.textContent = val;
+        label.appendChild(cb); label.appendChild(span);
+        row.appendChild(label);
+      });
+    }
+
+    function setAllCheckboxes(containerId, checked) {
+      document.querySelectorAll(`#${containerId} input[type="checkbox"]`).forEach(el => {
+        el.checked = !!checked;
+      });
+    }
+
+    function getChecked(containerId) {
+      const out = [];
+      document.querySelectorAll(`#${containerId} input[type="checkbox"], #${containerId} input[type="radio"]`)
+        .forEach(el => { if (el.checked) out.push(el.value); });
+      return out;
+    }
+
+    function addAccidentalRangeButtons(containerId) {
+      const row = document.getElementById(containerId);
+      for (let n = 0; n <= 7; n++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'range-btn' + (accidentalsSelected.has(n) ? ' active' : '');
+        btn.textContent = `${n}#/${n}♭`;
+        btn.title = `Include keys with exactly ${n} accidentals (sharp or flat)`;
+        btn.addEventListener('click', () => {
+          if (accidentalsSelected.has(n)) { accidentalsSelected.delete(n); btn.classList.remove('active'); }
+          else { accidentalsSelected.add(n); btn.classList.add('active'); }
+        });
+        row.appendChild(btn);
+      }
+    }
+
+    function addExcludeCheckboxes(containerId, values) {
+      const row = document.getElementById(containerId);
+      values.forEach(val => {
+        const id = `${containerId}_${String(val).replace(/[^A-Za-z0-9]/g,'_')}`;
+        const label = document.createElement('label');
+        label.className = 'chk-label';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.id = id; cb.value = val; cb.checked = false;
+        const span = document.createElement('span'); span.textContent = labelFor(val);
+        label.appendChild(cb); label.appendChild(span);
+        row.appendChild(label);
+      });
+    }
+
+    // ------------------------------
+    // Dynamic panels
+    // ------------------------------
+    function timeSigSortKey(sig) {
+      const m = String(sig).match(/^(\d+)\s*\/\s*(\d+)$/);
+      if (!m) return [9999, 9999];
+      return [Number(m[1]), Number(m[2])];
+    }
+
+    async function buildTimeSigPanelFromTunes() {
+      clearContainer("tsRow");
+      if (!tuneFiles || tuneFiles.length === 0) return;
+
+      const set = new Set();
+      for (const f of tuneFiles) {
+        try {
+          const md = await getMetadata(f);
+          if (md?.timeSig) set.add(md.timeSig);
+        } catch (e) { /* ignore */ }
+      }
+
+      const vals = Array.from(set).sort((a, b) => {
+        const [ac, au] = timeSigSortKey(a);
+        const [bc, bu] = timeSigSortKey(b);
+        return (ac - bc) || (au - bu) || a.localeCompare(b);
+      });
+
+      if (vals.length === 0) {
+        const row = document.getElementById("tsRow");
+        if (row) row.textContent = "No meters found in MEI metadata.";
+        return;
+      }
+
+      addPlainCheckboxes("tsRow", vals, true);
+    }
+
+    async function buildCollectionPanelFromTunes() {
+      clearContainer("colRow");
+      if (!tuneFiles || tuneFiles.length === 0) return;
+
+      const set = new Set();
+      for (const f of tuneFiles) {
+        try {
+          const md = await getMetadata(f);
+          const c = (md?.collection || "").trim();
+          if (c) set.add(c);
+        } catch (e) { /* ignore */ }
+      }
+
+      const vals = Array.from(set).sort((a, b) => a.localeCompare(b));
+
+      if (vals.length === 0) {
+        const row = document.getElementById("colRow");
+        if (row) row.textContent = "No collections found in MEI metadata.";
+        return;
+      }
+
+      addPlainCheckboxes("colRow", vals, true);
+    }
+
+    // ------------------------------
+    // MEI fetch
+    // ------------------------------
+    async function fetchMei(fileName) {
+      if (!originalMeiCache[fileName]) {
+        const res = await fetch(fileName, { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`Failed to fetch ${fileName}: ${res.status}`);
+        originalMeiCache[fileName] = await res.text();
+      }
+      return originalMeiCache[fileName];
+    }
+
+    // ------------------------------
+    // Comment metadata parser
+    // ------------------------------
+    function parseCommentMetadataFromXml(xmlDoc) {
+      if (!xmlDoc || !xmlDoc.documentElement) return null;
+
+      const meiRoot = xmlDoc.getElementsByTagName("mei")[0] || xmlDoc.documentElement;
+      const walker = xmlDoc.createTreeWalker(meiRoot, NodeFilter.SHOW_COMMENT, null);
+
+      const lines = [];
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        const text = (n.nodeValue || "").trim();
+        if (!text) continue;
+        text.split(/\r?\n/).forEach(line => {
+          const s = line.trim();
+          if (s) lines.push(s);
+        });
+      }
+      if (lines.length === 0) return null;
+
+      const md = { keyMode: "", keyTonic: "", timeSig: "", collection: "", title: "" };
+      for (const line of lines) {
+        let mm = line.match(/^key\s*:\s*([A-Ga-g])([#bB])?\s+(major|minor)\s*$/i);
+        if (mm) { md.keyTonic = mm[1].toUpperCase() + ((mm[2] || "").replace("B","b")); md.keyMode = mm[3].toLowerCase(); continue; }
+
+        mm = line.match(/^keyTonic\s*:\s*([A-Ga-g])([#bB])?\s*$/i);
+        if (mm) { md.keyTonic = mm[1].toUpperCase() + ((mm[2] || "").replace("B","b")); continue; }
+
+        mm = line.match(/^keyMode\s*:\s*(major|minor)\s*$/i);
+        if (mm) { md.keyMode = mm[1].toLowerCase(); continue; }
+
+        mm = line.match(/^timeSig\s*:\s*(\d+)\s*\/\s*(\d+)\s*$/i);
+        if (mm) { md.timeSig = `${mm[1]}/${mm[2]}`; continue; }
+
+        mm = line.match(/^collection\s*:\s*(.+)$/i);
+        if (mm) { md.collection = mm[1].trim(); continue; }
+
+        mm = line.match(/^title\s*:\s*(.+)$/i);
+        if (mm) { md.title = mm[1].trim(); continue; }
+      }
+
+      const hasSomething = ["keyMode","keyTonic","timeSig","collection","title"].some(k => md[k]);
+      return hasSomething ? md : null;
+    }
+
+    // ------------------------------
+    // Metadata reader
+    // ------------------------------
+    async function getMetadata(fileName) {
+      if (metadataCache[fileName]) return metadataCache[fileName];
+
+      const meiText = await fetchMei(fileName);
+      const xml = new DOMParser().parseFromString(meiText, "application/xml");
+
+      const fromComments = parseCommentMetadataFromXml(xml);
+      if (fromComments) {
+        metadataCache[fileName] = fromComments;
+
+        if (!fromComments.title) {
+          const titleEl = xml.querySelector("titleStmt > title");
+          fromComments.title = (titleEl?.textContent || "").trim();
+        }
+
+        if (!fromComments.timeSig) {
+          const mSig = xml.querySelector("scoreDef meterSig[count][unit], staffDef meterSig[count][unit], meterSig[count][unit]");
+          const mCount = (mSig?.getAttribute("count") || "").trim();
+          const mUnit  = (mSig?.getAttribute("unit")  || "").trim();
+          fromComments.timeSig = (mCount && mUnit) ? `${mCount}/${mUnit}` : "";
+        }
+
+        if (!fromComments.collection) {
+          const collEl = xml.querySelector('workDesc > work > identifier[type="collection"], identifier[type="collection"]');
+          fromComments.collection = (collEl?.textContent || "").trim();
+        }
+
+        return fromComments;
+      }
+
+      const keyEl = xml.querySelector("workDesc > work > key");
+      const keyMode  = (keyEl?.getAttribute("mode")  || "").trim();
+      const pname    = (keyEl?.getAttribute("pname") || "").trim().toLowerCase();
+      const accid    = (keyEl?.getAttribute("accid") || "").trim().toLowerCase();
+      const keyTonic = pname ? (pname.toUpperCase() + (accid === "s" ? "#" : accid === "f" ? "b" : "")) : "";
+
+      const collEl = xml.querySelector('workDesc > work > identifier[type="collection"], identifier[type="collection"]');
+      const collection = (collEl?.textContent || "").trim();
+
+      const mSig = xml.querySelector("scoreDef meterSig[count][unit], staffDef meterSig[count][unit], meterSig[count][unit]");
+      const mCount = (mSig?.getAttribute("count") || "").trim();
+      const mUnit  = (mSig?.getAttribute("unit")  || "").trim();
+      const timeSig = (mCount && mUnit) ? `${mCount}/${mUnit}` : "";
+
+      const titleEl = xml.querySelector("titleStmt > title");
+      const title = (titleEl?.textContent || "").trim();
+
+      const md = { keyMode, keyTonic, collection, timeSig, title };
+      metadataCache[fileName] = md;
+      return md;
+    }
+
+    // ------------------------------
+    // Strip title (no-render)
+    // ------------------------------
+    function stripMeiTitle(meiText) {
+      try {
+        const xml = new DOMParser().parseFromString(meiText, "application/xml");
+        const titleStmt = xml.querySelector("titleStmt");
+        if (titleStmt && titleStmt.parentNode) titleStmt.parentNode.removeChild(titleStmt);
+        return new XMLSerializer().serializeToString(xml);
+      } catch (e) {
+        console.warn("Failed to strip MEI title:", e);
+        return meiText;
+      }
+    }
+
+    // ------------------------------
+    // Key signature helpers
+    // ------------------------------
+    const KEY_SIG_BY_TONIC = {
+      "C":  { major:{t:"none",n:0}, minor:{t:"f",n:3} },
+      "G":  { major:{t:"s",n:1},   minor:{t:"f",n:2} },
+      "D":  { major:{t:"s",n:2},   minor:{t:"f",n:1} },
+      "A":  { major:{t:"s",n:3},   minor:{t:"none",n:0} },
+      "E":  { major:{t:"s",n:4},   minor:{t:"s",n:1} },
+      "B":  { major:{t:"s",n:5},   minor:{t:"s",n:2} },
+      "F#": { major:{t:"s",n:6},   minor:{t:"s",n:3} },
+      "C#": { major:{t:"s",n:7},   minor:{t:"s",n:4} },
+      "G#": { major:null,          minor:{t:"s",n:5} },
+
+      "F":  { major:{t:"f",n:1},   minor:{t:"f",n:4} },
+      "Bb": { major:{t:"f",n:2},   minor:{t:"f",n:5} },
+      "Eb": { major:{t:"f",n:3},   minor:{t:"f",n:6} },
+      "Ab": { major:{t:"f",n:4},   minor:{t:"f",n:7} },
+      "Db": { major:{t:"f",n:5},   minor:{t:"s",n:4} },
+      "Gb": { major:{t:"f",n:6},   minor:{t:"s",n:3} },
+      "Cb": { major:{t:"f",n:7},   minor:{t:"f",n:7} }
+    };
+
+    function normalizeTonic(tonic) {
+      if (!tonic || typeof tonic !== "string") return "";
+      const m = tonic.match(/^([A-Ga-g])([#bB])?$/);
+      if (!m) return tonic;
+      let letter = m[1].toUpperCase();
+      let acc = (m[2] || ""); if (acc === "B") acc = "b";
+      const canonical = letter + acc;
+      switch (canonical) {
+        case "Cb": return "B";
+        case "B#": return "C";
+        case "E#": return "F";
+        case "Fb": return "E";
+        default:   return canonical;
+      }
+    }
+
+    function tonicsByAccidentalsSelected(mode, selectedSet) {
+      const keyMode = (mode === "minor") ? "minor" : "major";
+      return Object.keys(KEY_SIG_BY_TONIC).filter(T => {
+        const pick = KEY_SIG_BY_TONIC[T][keyMode];
+        if (!pick) return false;
+        if (!selectedSet.has(pick.n)) return false;
+        if (keyMode === "minor" && T === "Cb") return false;
+        return true;
+      });
+    }
+
+    function keySigFor(tonic, mode) {
+      const T = normalizeTonic(tonic);
+      const entry = KEY_SIG_BY_TONIC[T];
+      if (!entry) return { sig: "", label: T };
+      const pick = (mode === "minor") ? entry.minor : entry.major;
+      if (!pick) return { sig: "", label: `${labelFor(T)} ${mode}` };
+      if (pick.t === "none" || pick.n === 0) return { sig: "", label: `${labelFor(T)} ${mode}` };
+      const sig = `${pick.n}${pick.t === "s" ? "s" : "f"}`;
+      return { sig, label: `${labelFor(T)} ${mode}` };
+    }
+
+    function relativeMajorForMinorTonic(minorTonic) {
+      const T = normalizeTonic(minorTonic);
+      const entry = KEY_SIG_BY_TONIC[T];
+      const pick = entry?.minor;
+      if (!pick) return "C";
+      if (pick.n === 0 && pick.t === "none") return "C";
+
+      const found = Object.keys(KEY_SIG_BY_TONIC).find(K => {
+        const maj = KEY_SIG_BY_TONIC[K]?.major;
+        return maj && maj.n === pick.n && maj.t === pick.t;
+      });
+      return found || "C";
+    }
+
+    function applyStartingKeyToMei(meiText, tonic, mode) {
+      const { sig } = keySigFor(tonic, mode);
+      const xml = new DOMParser().parseFromString(meiText, "application/xml");
+
+      xml.querySelectorAll("scoreDef, staffDef").forEach(el => {
+        if (el.hasAttribute("key.sig")) el.removeAttribute("key.sig");
+        if (el.hasAttribute("keysig"))  el.removeAttribute("keysig");
+
+        if (sig) {
+          el.setAttribute("key.sig", sig);
+          el.setAttribute("keysig",  sig);
+        } else {
+          el.setAttribute("keysig", "0");
+        }
+
+        if (mode) el.setAttribute("key.mode", mode);
+      });
+
+      return new XMLSerializer().serializeToString(xml);
+    }
+
+    function computeDisplayTonic(tonic) {
+      let t = tonic || "";
+      if (!t) return "";
+      if (ENHARMONIC_MAP[t]) {
+        if (preferFlats && t.includes("#")) t = ENHARMONIC_MAP[t];
+        if (!preferFlats && t.includes("b")) t = ENHARMONIC_MAP[t];
+      }
+      return t;
+    }
+
+    function tonicToVerovioTransposeTonic(tonic) {
+      const m = String(tonic || "").match(/^([A-Ga-g])([#bB])?$/);
+      if (!m) return "";
+      const pname = m[1].toLowerCase();
+      let acc = (m[2] || "");
+      if (acc === "B") acc = "b";
+      const accid = acc === "#" ? "s" : acc === "b" ? "f" : "";
+      return pname + accid;
+    }
+
+    function computeTransposeOption() {
+      if (!currentTargetKey) return "";
+
+      const displayMinorOrMajorTonic = computeDisplayTonic(currentTargetKey);
+
+      let tonicForVerovio = displayMinorOrMajorTonic;
+      if (currentMode === "minor") {
+        tonicForVerovio = relativeMajorForMinorTonic(displayMinorOrMajorTonic);
+        tonicForVerovio = computeDisplayTonic(tonicForVerovio);
+      }
+
+      const tonicParam = tonicToVerovioTransposeTonic(tonicForVerovio);
+      if (!tonicParam) return "";
+
+      const prefix = octaveShift > 0 ? "+".repeat(octaveShift)
+                   : octaveShift < 0 ? "-".repeat(-octaveShift)
+                   : "";
+
+      return prefix + tonicParam;
+    }
+
+    function readInitialKeySigFromXml(xml) {
+      let sig = xml.querySelector("scoreDef[keysig], staffDef[keysig]")?.getAttribute("keysig") || "";
+      if (!sig) sig = xml.querySelector("scoreDef[key\\.sig], staffDef[key\\.sig]")?.getAttribute("key.sig") || "";
+
+      sig = (sig || "").trim();
+      if (!sig || sig === "0") return { t: "none", n: 0 };
+
+      const m = sig.match(/^(\d+)([sf])$/);
+      if (!m) return { t: "none", n: 0 };
+      return { t: m[2], n: Number(m[1]) };
+    }
+
+    function inferTonicFromKeySig(mode, t, n) {
+      const keyMode = (mode === "minor") ? "minor" : "major";
+      const found = Object.keys(KEY_SIG_BY_TONIC).find(T => {
+        const pick = KEY_SIG_BY_TONIC[T][keyMode];
+        return pick && pick.t === t && pick.n === n;
+      });
+      if (!found && n === 0) return keyMode === "major" ? "C" : "A";
+      return found || "";
+    }
+
+    function computeResponsivePageWidth() {
+      const viewer = document.getElementById('viewer');
+      const w = viewer.clientWidth;
+      return Math.max(1400, Math.floor(w * 2.25));
+    }
+
+    function debounce(fn, delay = 120) {
+      let t = null;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), delay);
+      };
+    }
+
+    function updateScaleBadge() {
+      const badge = document.getElementById('scaleBadge');
+      if (badge) badge.textContent = `Scale: ${baseOptions.scale}`;
+    }
+    function updateSpacingBadge() {
+      const badge = document.getElementById('spacingBadge');
+      if (badge) {
+        const lin = baseOptions.spacingLinear.toFixed(2);
+        const non = baseOptions.spacingNonLinear.toFixed(2);
+        badge.textContent = `Spacing: ${lin} / ${non}`;
+        badge.title = `Linear: ${lin}, Non-linear: ${non}`;
+      }
+    }
+
+    function musicSizeChange(delta) {
+      const next = clamp(baseOptions.scale + delta, SCALE_MIN, SCALE_MAX);
+      if (next !== baseOptions.scale) {
+        baseOptions.scale = next;
+        renderCurrent();
+      }
+      updateScaleBadge();
+    }
+
+    function spacingChange(delta) {
+      const nextLinear     = clamp(baseOptions.spacingLinear     + delta, SPACING_MIN, SPACING_MAX);
+      const nextNonLinear  = clamp(baseOptions.spacingNonLinear  + delta, SPACING_MIN, SPACING_MAX);
+      if (nextLinear !== baseOptions.spacingLinear || nextNonLinear !== baseOptions.spacingNonLinear) {
+        baseOptions.spacingLinear = nextLinear;
+        baseOptions.spacingNonLinear = nextNonLinear;
+        renderCurrent();
+      }
+      updateSpacingBadge();
+    }
+
+    async function renderCurrent() {
+      if (!currentFile || !vrvToolkit) return;
+
+      let meiData = await fetchMei(currentFile);
+      meiData = stripMeiTitle(meiData);
+
+      if (originalTonic) {
+        const modeStr = currentMode === "minor" ? "minor" : "major";
+        meiData = applyStartingKeyToMei(meiData, originalTonic, modeStr);
+      }
+
+      const options = {
+        ...baseOptions,
+        pageWidth: computeResponsivePageWidth(),
+        transpose: computeTransposeOption()
+      };
+
+      vrvToolkit.setOptions(options);
+      vrvToolkit.loadData(meiData);
+
+      const svg = vrvToolkit.renderToSVG(1, {});
+      document.getElementById('svg').innerHTML = svg;
+
+      updateScaleBadge();
+      updateSpacingBadge();
+
+      const displayTonic = currentTargetKey ? computeDisplayTonic(currentTargetKey) : "";
+      const keyShown = currentTargetKey
+        ? `${labelFor(displayTonic)} ${currentMode || "major"}`
+        : (octaveShift ? (octaveShift > 0 ? "8va↑" : "8va↓") : "original");
+
+      try {
+        const md = await getMetadata(currentFile);
+        const titleText = (md.title || "").trim();
+        setStatus(currentFile, keyShown, titleText);
+      } catch (e) {
+        setStatus(currentFile, keyShown, "");
+      }
+    }
+
+    function setStatus(fileName, keyShown, titleText = "") {
+      const tuneName = (fileName && fileName !== "—") ? fileName.split('/').pop().replace(/\.mei$/i,'') : "—";
+      const keyText  = keyShown && keyShown.trim ? keyShown : "—";
+      const titleStr = (titleText && titleText.trim()) ? titleText.trim() : "—";
+      document.getElementById('statusTune').textContent = `File: ${tuneName}`;
+      document.getElementById('statusKey').textContent  = `Key: ${keyText}`;
+      const titleBar = document.getElementById('titleBar');
+      if (titleBar) {
+        titleBar.textContent = `Title: ${titleStr}`;
+        titleBar.title = titleStr;
+      }
+    }
+
+    async function pickRandomFilteredTune() {
+      if (!tuneFiles || tuneFiles.length === 0) throw new Error("No tunes found.");
+
+      const mmSelected  = getChecked('mmRow');
+      const tsSelected  = getChecked('tsRow');
+      const colSelected = getChecked('colRow');
+
+      const candidates = [];
+      for (const f of tuneFiles) {
+        try {
+          const md = await getMetadata(f);
+
+          const mmTag = (md.keyMode?.toLowerCase() === "minor") ? "Minor" : "Major";
+          const mmOk  = mmSelected.length === 0 ? true : mmSelected.includes(mmTag);
+
+          const tsOk  = tsSelected.length === 0 ? true : tsSelected.includes(md.timeSig);
+
+          const col = (md.collection || "").trim();
+          const colOk = colSelected.length === 0 ? true : colSelected.includes(col);
+
+          if (mmOk && tsOk && colOk) candidates.push(f);
+        } catch (e) {
+          console.warn("Skipping unreadable MEI:", f, e);
+        }
+      }
+      if (candidates.length === 0) throw new Error("No tunes match the selected tag filters.");
+      return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+
+    async function showRandomTune() {
+      try {
+        currentFile = await pickRandomFilteredTune();
+
+        const md = await getMetadata(currentFile);
+        currentMode   = (md.keyMode?.toLowerCase() === "minor") ? "minor" : "major";
+        originalTonic = md.keyTonic || "";
+
+        if (!originalTonic) {
+          const rawMei = await fetchMei(currentFile);
+          const xml = new DOMParser().parseFromString(rawMei, "application/xml");
+          const { t, n } = readInitialKeySigFromXml(xml);
+          originalTonic = inferTonicFromKeySig(currentMode, t, n);
+        }
+
+        let allowedTonics = tonicsByAccidentalsSelected(currentMode, accidentalsSelected);
+
+        const excluded = new Set(getChecked('exRow'));
+        allowedTonics = allowedTonics.filter(T => !excluded.has(T));
+
+        currentTargetKey = allowedTonics.length > 0
+          ? allowedTonics[Math.floor(Math.random() * allowedTonics.length)]
+          : "";
+
+        octaveShift = 0;
+        await renderCurrent();
+      } catch (err) {
+        console.error(err);
+        setStatus("—", `Error: ${err.message}`, "");
+      }
+    }
+
+    async function octaveUp()   { octaveShift += 1; await renderCurrent(); }
+    async function octaveDown() { octaveShift -= 1; await renderCurrent(); }
+
+    async function discoverTunes() {
+      try {
+        const res = await fetch(`tunes.json?_=${Date.now()}`, { cache: 'no-cache' });
+        if (res.ok) {
+          const arr = await res.json();
+          const mei = (Array.isArray(arr) ? arr : [])
+            .filter(x => typeof x === 'string')
+            .map(x => x.split('#')[0].split('?')[0])
+            .filter(x => /\.mei$/i.test(x))
+            .map(x => x.replace(/^\.?\//,'').replace(/\\/g,'/'));
+          if (mei.length > 0) {
+            tuneFiles = Array.from(new Set(mei));
+            console.log('Loaded tunes from manifest:', tuneFiles);
+            return;
+          }
+        }
+      } catch (e) { console.warn('Manifest fetch/parsing failed:', e); }
+
+      try {
+        const res = await fetch(`tunes/?_=${Date.now()}`, { cache: 'no-cache' });
+        if (res.ok) {
+          const html = await res.text();
+          const tmp = document.createElement('div'); tmp.innerHTML = html;
+          const hrefs = Array.from(tmp.querySelectorAll('a[href]')).map(a => a.getAttribute('href')).filter(Boolean);
+          const paths = hrefs
+            .map(h => h.split('#')[0].split('?')[0])
+            .filter(h => /\.mei$/i.test(h))
+            .map(h => (h.startsWith('tunes/') ? h : `tunes/${h.replace(/^\.?\//,'')}`));
+          if (paths.length > 0) {
+            tuneFiles = Array.from(new Set(paths));
+            console.log('Discovered tunes from directory listing:', tuneFiles);
+            return;
+          }
+        }
+      } catch (e) { console.warn('Directory listing parse failed:', e); }
+
+      tuneFiles = [];
+      console.warn('No tunes found (manifest missing and directory listing empty).');
+    }
+
+    function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src; s.async = true;
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error(`Failed to load ${src}`));
+        document.head.appendChild(s);
+      });
+    }
+
+    // ------------------------------
+    // Check all / uncheck all wiring
+    // ------------------------------
+    function wireCheckAllNone() {
+      // Key range buttons: set accidentalsSelected and sync .active class
+      const syncKeyRangeButtons = (checked) => {
+        if (checked) {
+          for (let n = 0; n <= 7; n++) accidentalsSelected.add(n);
+        } else {
+          accidentalsSelected.clear();
+        }
+        document.querySelectorAll('#keysRangeRow .range-btn').forEach(btn => {
+          const m = btn.textContent.match(/^(\d+)/);
+          const n = m ? Number(m[1]) : null;
+          if (n === null) return;
+          btn.classList.toggle('active', accidentalsSelected.has(n));
+        });
+      };
+
+      document.getElementById('keysAllBtn')?.addEventListener('click', () => syncKeyRangeButtons(true));
+      document.getElementById('keysNoneBtn')?.addEventListener('click', () => syncKeyRangeButtons(false));
+
+      document.getElementById('exAllBtn')?.addEventListener('click', () => setAllCheckboxes('exRow', true));
+      document.getElementById('exNoneBtn')?.addEventListener('click', () => setAllCheckboxes('exRow', false));
+
+      document.getElementById('colAllBtn')?.addEventListener('click', () => setAllCheckboxes('colRow', true));
+      document.getElementById('colNoneBtn')?.addEventListener('click', () => setAllCheckboxes('colRow', false));
+    }
+
+    async function init() {
+      addAccidentalRangeButtons("keysRangeRow");
+      addExcludeCheckboxes("exRow", excludeTonics);
+      addPlainCheckboxes("mmRow", majorMinorVals, true);
+
+      wireCheckAllNone();
+
+      await discoverTunes();
+
+      if (!tuneFiles || tuneFiles.length === 0) {
+        setStatus("—", "No tunes found.", "");
+      } else {
+        await buildTimeSigPanelFromTunes();
+        await buildCollectionPanelFromTunes();
+      }
+
+      const verovioUrl = 'https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js?v=latest';
+      try { await loadScript(verovioUrl); }
+      catch (err) { console.error(err); setStatus("—", `Failed to load Verovio: ${err.message}`, ""); return; }
+
+      const waitForGlobal = () => new Promise((resolve, reject) => {
+        const start = performance.now(); const maxWaitMs = 10000;
+        (function poll() {
+          if (window.verovio && window.verovio.module) return resolve();
+          if (performance.now() - start > maxWaitMs) return reject(new Error('Verovio global not found'));
+          setTimeout(poll, 50);
+        })();
+      });
+
+      try {
+        await waitForGlobal();
+        window.verovio.module.onRuntimeInitialized = () => {
+          try {
+            vrvToolkit = new verovio.toolkit();
+
+            document.getElementById('randomBtn').disabled  = false;
+            document.getElementById('octUpBtn').disabled   = false;
+            document.getElementById('octDownBtn').disabled = false;
+
+            document.getElementById('spacingPlusBtn').disabled  = false;
+            document.getElementById('spacingMinusBtn').disabled = false;
+
+            document.getElementById('musicPlusBtn').disabled  = false;
+            document.getElementById('musicMinusBtn').disabled = false;
+
+            document.getElementById('enharmonicBtn').disabled = false;
+
+            document.getElementById('randomBtn').addEventListener('click', showRandomTune);
+            document.getElementById('octUpBtn').addEventListener('click',  octaveUp);
+            document.getElementById('octDownBtn').addEventListener('click', octaveDown);
+
+            document.getElementById('spacingPlusBtn').addEventListener('click', () => spacingChange(+0.01));
+            document.getElementById('spacingMinusBtn').addEventListener('click', () => spacingChange(-0.01));
+
+            document.getElementById('musicPlusBtn').addEventListener('click', () => musicSizeChange(+2));
+            document.getElementById('musicMinusBtn').addEventListener('click', () => musicSizeChange(-2));
+
+            document.getElementById('enharmonicBtn').addEventListener('click', () => {
+              preferFlats = !preferFlats;
+              renderCurrent();
+            });
+
+            window.addEventListener('resize', debounce(() => { renderCurrent(); }, 150));
+
+            updateSpacingBadge();
+            updateScaleBadge();
+
+            if (tuneFiles.length > 0) showRandomTune();
+          } catch (err) {
+            console.error(err);
+            setStatus("—", `Toolkit init error: ${err.message}`, "");
+          }
+        };
+        setStatus("—", "Initializing Verovio…", "");
+      } catch (err) {
+        console.error(err);
+        setStatus("—", `Verovio not available: ${err.message}`, "");
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
