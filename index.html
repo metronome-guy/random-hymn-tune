@@ -177,7 +177,6 @@
 
     const majorMinorVals = ["Major", "Minor"];
     const dupleTripleVals = ["Duple", "Triple"];
-    const collectionVals  = ["Orgelbuchlein", "Hymnal 1982", "GH favorite"];
     const excludeTonics   = ["C","C#","Db","D","D#","Eb","E","F","F#","Gb","G","G#","Ab","A","Bb","B","Cb"];
 
     let vrvToolkit = null;
@@ -195,17 +194,27 @@
     const metadataCache   = {};    // filename -> parsed tags (with version)
 
     const MEI_NS = "http://www.music-encoding.org/ns/mei";
-    const METADATA_CACHE_VERSION = 3; // bumped for multi-collection support
+    const METADATA_CACHE_VERSION = 4; // bumped for dynamic collection UI
 
-    // ------------------------------
-    // Namespace-safe helpers
-    // ------------------------------
-    function nodelistToArray(nl) { return Array.prototype.slice.call(nl || []); }
-    function allByTagNS(xml, tag) { return nodelistToArray(xml.getElementsByTagNameNS(MEI_NS, tag)); }
-    function firstByTagNS(xml, tag) {
-      const nl = xml.getElementsByTagNameNS(MEI_NS, tag);
-      return nl && nl.length ? nl[0] : null;
-    }
+    // --- ENGRAVING OPTIONS ---
+    const baseOptions = {
+      scale: 44,
+      pageWidth: 2200,
+      pageHeight: 2000,
+      adjustPageHeight: true,
+      pageMarginLeft: 20,
+      pageMarginRight: 20,
+      pageMarginTop: 24,
+      pageMarginBottom: 24,
+      spacingSystem: 10,
+      spacingStaff: 8,
+      spacingLinear: 0.16,
+      spacingNonLinear: 0.40,
+      minMeasureWidth: 44,
+      justifyVertically: false,
+      breaks: "auto",
+      spacingLyrics: 6
+    };
 
     // ------------------------------
     // Bounds & steps
@@ -221,28 +230,45 @@
     function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
 
     // ------------------------------
+    // Namespace-safe helpers
+    // ------------------------------
+    function nodelistToArray(nl) { return Array.prototype.slice.call(nl || []); }
+    function allByTagNS(xml, tag) { return nodelistToArray(xml.getElementsByTagNameNS(MEI_NS, tag)); }
+    function firstByTagNS(xml, tag) {
+      const nl = xml.getElementsByTagNameNS(MEI_NS, tag);
+      return nl && nl.length ? nl[0] : null;
+    }
+
+    // ------------------------------
     // UI builders
     // ------------------------------
-    function addPlainCheckboxes(containerId, values) {
+    function clearRow(containerId) {
+      const row = document.getElementById(containerId);
+      while (row.firstChild) row.removeChild(row.firstChild);
+    }
+
+    function addPlainCheckboxes(containerId, values, defaultChecked = true) {
       const row = document.getElementById(containerId);
       values.forEach(val => {
         const id = `${containerId}_${String(val).replace(/[^A-Za-z0-9]/g,'_')}`;
         const label = document.createElement('label');
         label.className = 'chk-label';
         const cb = document.createElement('input');
-        cb.type = 'checkbox'; cb.id = id; cb.value = val; cb.checked = true;
+        cb.type = 'checkbox'; cb.id = id; cb.value = val; cb.checked = defaultChecked;
         const span = document.createElement('span');
         span.textContent = val;
         label.appendChild(cb); label.appendChild(span);
         row.appendChild(label);
       });
     }
+
     function getChecked(containerId) {
       const out = [];
       document.querySelectorAll(`#${containerId} input[type="checkbox"], #${containerId} input[type="radio"]`)
         .forEach(el => { if (el.checked) out.push(el.value); });
       return out;
     }
+
     function addAccidentalRangeButtons(containerId) {
       const row = document.getElementById(containerId);
       for (let n = 0; n <= 7; n++) {
@@ -258,6 +284,7 @@
         row.appendChild(btn);
       }
     }
+
     function addExcludeCheckboxes(containerId, values) {
       const row = document.getElementById(containerId);
       values.forEach(val => {
@@ -318,7 +345,6 @@
         mm = line.match(/^meterGroup\s*:\s*(duple|triple)\s*$/i);
         if (mm) { md.meterGroup = mm[1][0].toUpperCase() + mm[1].slice(1).toLowerCase(); continue; }
 
-        // allow multiple: collection: X / collection: Y
         mm = line.match(/^collection\s*:\s*(.+)$/i);
         if (mm) {
           const c = mm[1].trim();
@@ -349,7 +375,7 @@
     }
 
     // ------------------------------
-    // ✅ NEW: read ALL collection identifiers
+    // Collections from MEI (ALL of them)
     // ------------------------------
     function collectionsFromXml(xml) {
       const identifiers = allByTagNS(xml, "identifier");
@@ -373,7 +399,6 @@
       if (fromComments) {
         if (!fromComments.meterGroup) fromComments.meterGroup = meterGroupFromXml(xml);
 
-        // ✅ NEW: if collections missing in comments, fill from XML identifiers (can be multiple)
         if (!fromComments.collections || fromComments.collections.length === 0) {
           fromComments.collections = collectionsFromXml(xml);
           if (!fromComments.collection && fromComments.collections.length) {
@@ -399,7 +424,6 @@
       const accid    = (keyEl?.getAttribute("accid") || "").trim().toLowerCase();
       const keyTonic = pname ? (pname.toUpperCase() + (accid === "s" ? "#" : accid === "f" ? "b" : "")) : "";
 
-      // ✅ NEW
       const collections = collectionsFromXml(xml);
       const collection  = collections.length ? collections[0] : "";
 
@@ -411,6 +435,35 @@
       const out = { keyMode, keyTonic, collection, collections, meterGroup, title, __v: METADATA_CACHE_VERSION };
       metadataCache[fileName] = out;
       return out;
+    }
+
+    // ------------------------------
+    // Build collections UI dynamically
+    // ------------------------------
+    async function buildCollectionsUIFromAllTunes() {
+      clearRow("colRow");
+
+      const set = new Set();
+      for (const f of tuneFiles) {
+        try {
+          const md = await getMetadata(f);
+          const cols = (md.collections && md.collections.length) ? md.collections : (md.collection ? [md.collection] : []);
+          cols.forEach(c => set.add(c));
+        } catch (e) {
+          // ignore unreadable file for UI purposes
+        }
+      }
+
+      const list = Array.from(set).sort((a,b) => a.localeCompare(b));
+      if (list.length === 0) {
+        addPlainCheckboxes("colRow", ["(no collections found)"], true);
+        // disable that one checkbox
+        const el = document.querySelector(`#colRow input[type="checkbox"]`);
+        if (el) el.disabled = true;
+        return;
+      }
+
+      addPlainCheckboxes("colRow", list, true);
     }
 
     // ------------------------------
@@ -431,7 +484,7 @@
     }
 
     // ------------------------------
-    // Key signature helpers
+    // Key signature helpers (unchanged from your current baseline)
     // ------------------------------
     const KEY_SIG_BY_TONIC = {
       "C":  { major:{t:"none",n:0}, minor:{t:"f",n:3} },
@@ -609,7 +662,6 @@
         t = setTimeout(() => fn(...args), delay);
       };
     }
-    const onResize = debounce(() => { renderCurrent(); }, 150);
 
     // ------------------------------
     // Status badges
@@ -727,7 +779,6 @@
 
           const dtOk  = dtSelected.length === 0 ? true : dtSelected.includes(md.meterGroup);
 
-          // ✅ NEW: any-match against md.collections (fallback to md.collection)
           const tuneCollections = (md.collections && md.collections.length) ? md.collections : (md.collection ? [md.collection] : []);
           const colOk = colSelected.length === 0
             ? true
@@ -781,6 +832,7 @@
     // Discover tunes
     // ------------------------------
     async function discoverTunes() {
+      // Try manifest first
       try {
         const res = await fetch(`tunes.json?_=${Date.now()}`, { cache: 'no-cache' });
         if (res.ok) {
@@ -798,6 +850,7 @@
         }
       } catch (e) { console.warn('Manifest fetch/parsing failed:', e); }
 
+      // Fallback: directory listing
       try {
         const res = await fetch(`tunes/?_=${Date.now()}`, { cache: 'no-cache' });
         if (res.ok) {
@@ -839,12 +892,14 @@
     async function init() {
       addAccidentalRangeButtons("keysRangeRow");
       addExcludeCheckboxes("exRow", excludeTonics);
-      addPlainCheckboxes("mmRow", majorMinorVals);
-      addPlainCheckboxes("dtRow", dupleTripleVals);
-      addPlainCheckboxes("colRow", collectionVals);
+      addPlainCheckboxes("mmRow", majorMinorVals, true);
+      addPlainCheckboxes("dtRow", dupleTripleVals, true);
 
       await discoverTunes();
       if (!tuneFiles || tuneFiles.length === 0) setStatus("—", "No tunes found.", "");
+
+      // ✅ NEW: build collections UI based on actual MEI files
+      await buildCollectionsUIFromAllTunes();
 
       const verovioUrl = 'https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js?v=latest';
       try { await loadScript(verovioUrl); }
@@ -908,28 +963,6 @@
         console.error(err);
         setStatus("—", `Verovio not available: ${err.message}`, "");
       }
-    }
-
-    function updateScaleBadge() {
-      const badge = document.getElementById('scaleBadge');
-      if (badge) badge.textContent = `Scale: ${baseOptions.scale}`;
-    }
-    function updateSpacingBadge() {
-      const badge = document.getElementById('spacingBadge');
-      if (badge) {
-        const lin = baseOptions.spacingLinear.toFixed(2);
-        const non = baseOptions.spacingNonLinear.toFixed(2);
-        badge.textContent = `Spacing: ${lin} / ${non}`;
-        badge.title = `Linear: ${lin}, Non-linear: ${non}`;
-      }
-    }
-
-    function debounce(fn, delay = 120) {
-      let t = null;
-      return (...args) => {
-        clearTimeout(t);
-        t = setTimeout(() => fn(...args), delay);
-      };
     }
 
     document.addEventListener('DOMContentLoaded', init);
