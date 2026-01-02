@@ -194,11 +194,13 @@
     const metadataCache   = {};    // filename -> parsed tags (with version)
 
     const MEI_NS = "http://www.music-encoding.org/ns/mei";
-    const METADATA_CACHE_VERSION = 4; // bumped for dynamic collection UI
+    const METADATA_CACHE_VERSION = 4; // dynamic collection UI
 
-    // --- ENGRAVING OPTIONS ---
+    // --- ENGRAVING OPTIONS (RESTORED) ---
     const baseOptions = {
       scale: 44,
+
+      // Page geometry
       pageWidth: 2200,
       pageHeight: 2000,
       adjustPageHeight: true,
@@ -206,13 +208,21 @@
       pageMarginRight: 20,
       pageMarginTop: 24,
       pageMarginBottom: 24,
+
+      // Vertical spacing
       spacingSystem: 10,
       spacingStaff: 8,
+
+      // Horizontal spacing (initial defaults)
       spacingLinear: 0.16,
       spacingNonLinear: 0.40,
       minMeasureWidth: 44,
+
+      // Layout behavior
       justifyVertically: false,
       breaks: "auto",
+
+      // Lyrics compact
       spacingLyrics: 6
     };
 
@@ -228,6 +238,14 @@
     const SPACING_STEP = 0.01;
 
     function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
+
+    function debounce(fn, delay = 120) {
+      let t = null;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), delay);
+      };
+    }
 
     // ------------------------------
     // Namespace-safe helpers
@@ -297,6 +315,46 @@
         label.appendChild(cb); label.appendChild(span);
         row.appendChild(label);
       });
+    }
+
+    // ------------------------------
+    // Status badges
+    // ------------------------------
+    function updateScaleBadge() {
+      const badge = document.getElementById('scaleBadge');
+      if (badge) badge.textContent = `Scale: ${baseOptions.scale}`;
+    }
+    function updateSpacingBadge() {
+      const badge = document.getElementById('spacingBadge');
+      if (badge) {
+        const lin = baseOptions.spacingLinear.toFixed(2);
+        const non = baseOptions.spacingNonLinear.toFixed(2);
+        badge.textContent = `Spacing: ${lin} / ${non}`;
+        badge.title = `Linear: ${lin}, Non-linear: ${non}`;
+      }
+    }
+
+    // ------------------------------
+    // Controls
+    // ------------------------------
+    function musicSizeChange(delta) {
+      const next = clamp(baseOptions.scale + delta, SCALE_MIN, SCALE_MAX);
+      if (next !== baseOptions.scale) {
+        baseOptions.scale = next;
+        renderCurrent();
+      }
+      updateScaleBadge();
+    }
+
+    function spacingChange(delta) {
+      const nextLinear     = clamp(baseOptions.spacingLinear     + delta, SPACING_MIN, SPACING_MAX);
+      const nextNonLinear  = clamp(baseOptions.spacingNonLinear  + delta, SPACING_MIN, SPACING_MAX);
+      if (nextLinear !== baseOptions.spacingLinear || nextNonLinear !== baseOptions.spacingNonLinear) {
+        baseOptions.spacingLinear = nextLinear;
+        baseOptions.spacingNonLinear = nextNonLinear;
+        renderCurrent();
+      }
+      updateSpacingBadge();
     }
 
     // ------------------------------
@@ -449,15 +507,12 @@
           const md = await getMetadata(f);
           const cols = (md.collections && md.collections.length) ? md.collections : (md.collection ? [md.collection] : []);
           cols.forEach(c => set.add(c));
-        } catch (e) {
-          // ignore unreadable file for UI purposes
-        }
+        } catch (e) {}
       }
 
       const list = Array.from(set).sort((a,b) => a.localeCompare(b));
       if (list.length === 0) {
         addPlainCheckboxes("colRow", ["(no collections found)"], true);
-        // disable that one checkbox
         const el = document.querySelector(`#colRow input[type="checkbox"]`);
         if (el) el.disabled = true;
         return;
@@ -467,7 +522,7 @@
     }
 
     // ------------------------------
-    // Strip MEI title
+    // Strip MEI title so it doesn't render in SVG
     // ------------------------------
     function stripMeiTitle(meiText) {
       try {
@@ -484,7 +539,7 @@
     }
 
     // ------------------------------
-    // Key signature helpers (unchanged from your current baseline)
+    // Key signature helpers
     // ------------------------------
     const KEY_SIG_BY_TONIC = {
       "C":  { major:{t:"none",n:0}, minor:{t:"f",n:3} },
@@ -653,54 +708,6 @@
       const viewer = document.getElementById('viewer');
       const w = viewer.clientWidth;
       return Math.max(1400, Math.floor(w * 2.25));
-    }
-
-    function debounce(fn, delay = 120) {
-      let t = null;
-      return (...args) => {
-        clearTimeout(t);
-        t = setTimeout(() => fn(...args), delay);
-      };
-    }
-
-    // ------------------------------
-    // Status badges
-    // ------------------------------
-    function updateScaleBadge() {
-      const badge = document.getElementById('scaleBadge');
-      if (badge) badge.textContent = `Scale: ${baseOptions.scale}`;
-    }
-    function updateSpacingBadge() {
-      const badge = document.getElementById('spacingBadge');
-      if (badge) {
-        const lin = baseOptions.spacingLinear.toFixed(2);
-        const non = baseOptions.spacingNonLinear.toFixed(2);
-        badge.textContent = `Spacing: ${lin} / ${non}`;
-        badge.title = `Linear: ${lin}, Non-linear: ${non}`;
-      }
-    }
-
-    // ------------------------------
-    // Controls
-    // ------------------------------
-    function musicSizeChange(delta) {
-      const next = clamp(baseOptions.scale + delta, SCALE_MIN, SCALE_MAX);
-      if (next !== baseOptions.scale) {
-        baseOptions.scale = next;
-        renderCurrent();
-      }
-      updateScaleBadge();
-    }
-
-    function spacingChange(delta) {
-      const nextLinear     = clamp(baseOptions.spacingLinear     + delta, SPACING_MIN, SPACING_MAX);
-      const nextNonLinear  = clamp(baseOptions.spacingNonLinear  + delta, SPACING_MIN, SPACING_MAX);
-      if (nextLinear !== baseOptions.spacingLinear || nextNonLinear !== baseOptions.spacingNonLinear) {
-        baseOptions.spacingLinear = nextLinear;
-        baseOptions.spacingNonLinear = nextNonLinear;
-        renderCurrent();
-      }
-      updateSpacingBadge();
     }
 
     // ------------------------------
@@ -898,7 +905,7 @@
       await discoverTunes();
       if (!tuneFiles || tuneFiles.length === 0) setStatus("—", "No tunes found.", "");
 
-      // ✅ NEW: build collections UI based on actual MEI files
+      // Build collection UI from actual MEI files
       await buildCollectionsUIFromAllTunes();
 
       const verovioUrl = 'https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js?v=latest';
