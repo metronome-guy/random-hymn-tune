@@ -1,0 +1,52 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<mei xmlns="http://www.music-encoding.org/ns/mei" meiversion="5.0.0">
+  <meiHead>
+    <fileDesc>
+      <titleStmt>
+        <!-- Title displayed/parsed by the app -->
+        <title>In Dir ist Freude BWV XXX</title>
+      </titleStmt>
+      </fileDesc>
+
+    <!-- Work metadata -->
+    <workDesc>
+      <work>
+        <!-- Original tonic + mode (lowercase pname, 'major'/'minor' mode) -->
+        <key pname="g" mode="major"/>
+        <!-- Collection stored as an identifier -->
+        <identifier type="collection">Orgelbüchlein</identifier>
+      </work>
+    </workDesc>
+  </meiHead>
+
+  <music>
+    <body>
+      <mdiv>
+        <score>
+  <scoreDef>
+    <staffGrp>
+      <staffDef n="1" lines="5">
+        <clef shape="G" line="2"/>
+        <meterSig count="3" unit="2"/>
+        <keySig sig="1s"/>
+      </staffDef>
+    </staffGrp>
+  </scoreDef>
+
+  <section>
+    <measure n="1">
+      <staff n="1">
+        <layer n="1">
+          <note pname="d" oct="5" dur="2"/>
+          <note pname="d" oct="5" dur="2"/>
+          <note pname="c" oct="5" dur="2"/>
+        </layer>
+      </staff>
+    </measure>
+  </section>
+</score>
+      </mdiv>
+    </body>
+  </music>
+</mei>

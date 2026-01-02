@@ -1,0 +1,173 @@
+
+<mei xmlns="http://www.music-encoding.org/ns/mei" meiversion="5.0.0">
+  <meiHead>
+    <fileDesc>
+      <titleStmt>
+                 <!-- ***Title*** -->
+        <title>Jesu Meine Freude BWV 610</title>
+      </titleStmt>
+      <pubStmt>
+        <respStmt><resp>Generated example</resp></respStmt>
+      </pubStmt>
+      <sourceDesc><p>Simple melody example</p></sourceDesc>
+    </fileDesc>
+
+    <!-- Work metadata (tags) -->
+    <workDesc>
+      <work>
+                   <!-- ******Title******** -->
+        <title>Jesu Meine Freude BWV 610</title>
+
+             <!-- ******Key (in lowercase) and Mode (in lowercase)****** -->
+        <key pname="c" mode="minor"/>
+
+             <!-- ******Duple or Triple (capitalized) *********-->
+        <annot type="meterGroup">Duple</annot>
+
+                    <!-- ******Collection *********-->
+        <identifier type="collection">Orgelbuchlein</identifier>
+      </work>
+    </workDesc>
+  </meiHead>
+
+ <music>
+    <body>
+      <mdiv>
+        <score>
+           <scoreDef>
+            <staffGrp>
+              <staffDef n="1" lines="5">
+                <clef shape="G" line="2"/>
+                     <!-- ******Time signature *********-->
+                <meterSig count="4" unit="4"/>
+                     <!-- ******Key signature *********-->
+                <keySig sig="3f"/>
+                          <!-- ******Key  *********-->
+                <key pname="c" mode="minor"/>
+              </staffDef>
+            </staffGrp>
+          </scoreDef>
+
+  <section>
+
+            <measure n="1">
+              <staff n="1"><layer n="1">
+                <note pname="g" oct="4" dur="4" dots="1"/>
+                <note pname="g" oct="4" dur="8"/>
+                <note pname="f" oct="4" dur="4"/>
+                <note pname="e" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <measure n="2">
+              <staff n="1"><layer n="1">
+                <note pname="d" oct="4" dur="2"/>
+                <note xml:id="m2_n2" pname="c" oct="4" dur="2"/>
+              </layer></staff>
+              <fermata startid="#m2_n2" place="above"/>
+            </measure>
+
+            <!-- ↓↓↓ measures 3–6 corrected ↓↓↓ -->
+
+            <measure n="3">
+              <staff n="1"><layer n="1">
+                <note pname="g" oct="4" dur="4"/>
+                <note pname="g" oct="4" dur="4"/>
+                <note pname="a" oct="4" dur="4"/>
+                <note pname="b" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <measure n="4">
+              <staff n="1"><layer n="1">
+                <note pname="c" oct="5" dur="2"/>
+                <note xml:id="m4_n2" pname="b" oct="4" dur="2"/>
+              </layer></staff>
+              <fermata startid="#m4_n2" place="above"/>
+            </measure>
+
+            <measure n="5">
+              <staff n="1"><layer n="1">
+                <note pname="c" oct="5" dur="4"/>
+                <note pname="e" oct="5" dur="4"/>
+                <note pname="d" oct="5" dur="4"/>
+                <note pname="d" oct="5" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <measure n="6">
+              <staff n="1"><layer n="1">
+                <note xml:id="m6_n1" pname="c" oct="5" dur="1"/>
+              </layer></staff>
+              <fermata startid="#m6_n1" place="above"/>
+            </measure>
+
+            <!-- ↑↑↑ correction ends ↑↑↑ -->
+
+            <measure n="7">
+              <staff n="1"><layer n="1">
+                <note pname="g" oct="4" dur="4"/>
+                <note pname="g" oct="4" dur="4"/>
+                <note pname="a" oct="4" dur="4"/>
+                <note pname="g" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <measure n="8">
+              <staff n="1"><layer n="1">
+                <note pname="f" oct="4" dur="4" dots="1"/>
+                <note pname="f" oct="4" dur="8"/>
+                <note xml:id="m8_n3" pname="e" oct="4" dur="2"/>
+              </layer></staff>
+              <fermata startid="#m8_n3" place="above"/>
+            </measure>
+
+            <measure n="9">
+              <staff n="1"><layer n="1">
+                <note pname="g" oct="4" dur="4"/>
+                <note pname="g" oct="4" dur="4"/>
+                <note pname="a" oct="4" dur="4"/>
+                <note pname="b" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <measure n="10">
+              <staff n="1"><layer n="1">
+                <note pname="c" oct="5" dur="4"/>
+                <note pname="b" oct="4" dur="4"/>
+                <note pname="a" oct="4" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <measure n="11">
+              <staff n="1"><layer n="1">
+                <note xml:id="m11_n1" pname="g" oct="4" dur="2"/>
+                <note pname="e" oct="4" dur="4"/>
+                <note pname="e" oct="4" dur="4"/>
+              </layer></staff>
+              <fermata startid="#m11_n1" place="above"/>
+            </measure>
+
+            <measure n="12">
+              <staff n="1"><layer n="1">
+                <note pname="f" oct="4" dur="4"/>
+                <note pname="e" oct="4" dur="4"/>
+                <note pname="d" oct="4" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <measure n="13" right="dbl">
+              <staff n="1"><layer n="1">
+                <note xml:id="m13_n1" pname="c" oct="4" dur="1"/>
+              </layer></staff>
+              <fermata startid="#m13_n1" place="above"/>
+              <barLine form="dbl"/>
+            </measure>
+
+          </section>
+        </score>
+      </mdiv>
+    </body>
+  </music>
+
+</mei>

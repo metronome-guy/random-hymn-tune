@@ -1,0 +1,55 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<mei xmlns="http://www.music-encoding.org/ns/mei" meiversion="5.0.0">
+  <meiHead>
+    <fileDesc>
+      <titleStmt>
+        <!-- Title displayed/parsed by the app -->
+        <title>Jesu Meine Freude BWV 610</title>
+      </titleStmt>
+      </fileDesc>
+
+    <!-- Work metadata -->
+    <workDesc>
+      <work>
+        <!-- Original tonic + mode (lowercase pname, 'major'/'minor' mode) -->
+        <key pname="c" mode="minor"/>
+        <!-- Collection stored as an identifier -->
+        <identifier type="collection">Orgelbüchlein</identifier>
+      </work>
+    </workDesc>
+  </meiHead>
+
+  <music>
+    <body>
+      <mdiv>
+        <score>
+          <scoreDef>
+            <staffGrp>
+              <staffDef n="1" lines="5">
+                <clef shape="G" line="2"/>
+                <meterSig count="4" unit="4"/>
+                <!-- Notational key signature for rendering (3 flats for C minor) -->
+                <keySig sig="3f"/>
+              </staffDef>
+            </staffGrp>
+          </scoreDef>
+
+          <section>
+            <measure n="1">
+              <staff n="1"><layer n="1">
+                <note pname="g" oct="4" dur="4" dots="1"/>
+                <note pname="g" oct="4" dur="8"/>
+                <note pname="f" oct="4" dur="4"/>
+                <note pname="e" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- ...remaining measures... -->
+
+          </section>
+        </score>
+      </mdiv>
+    </body>
+  </music>
+</mei>
