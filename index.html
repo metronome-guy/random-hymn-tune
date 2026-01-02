@@ -71,7 +71,7 @@
     }
 
     #optionsBar {
-      display: flex; align-items: flex-start; gap: var(--panel-gap); flex-wrap: wrap; margin-bottom: 8px;
+      display: flex; align-items: flex-start; gap: var(--panel-gap); flex-wrap: wrap; margin-top: 8px; margin-bottom: 8px;
     }
 
     .panel {
@@ -123,6 +123,7 @@
       background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 4px; min-height: 200px;
       overflow-x: auto;
       overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
     }
 
     #svg { width: 100%; height: auto; }
@@ -156,6 +157,11 @@
     </div>
   </div>
 
+  <!-- MOVED UP: Title, then music -->
+  <div id="titleBar" aria-live="polite">Title: —</div>
+  <div id="viewer"><div id="svg"></div></div>
+
+  <!-- Options now come AFTER the music -->
   <div id="optionsBar">
     <fieldset class="panel" id="keysPanel">
       <legend>Key range</legend>
@@ -204,10 +210,6 @@
       </div>
     </fieldset>
   </div>
-
-  <div id="titleBar" aria-live="polite">Title: —</div>
-
-  <div id="viewer"><div id="svg"></div></div>
 
   <footer><p>created for the University of Iowa Organ Studio</p></footer>
 
@@ -890,17 +892,11 @@
       });
     }
 
-    // ------------------------------
-    // Check all / uncheck all wiring
-    // ------------------------------
     function wireCheckAllNone() {
-      // Key range buttons: set accidentalsSelected and sync .active class
       const syncKeyRangeButtons = (checked) => {
-        if (checked) {
-          for (let n = 0; n <= 7; n++) accidentalsSelected.add(n);
-        } else {
-          accidentalsSelected.clear();
-        }
+        if (checked) { for (let n = 0; n <= 7; n++) accidentalsSelected.add(n); }
+        else { accidentalsSelected.clear(); }
+
         document.querySelectorAll('#keysRangeRow .range-btn').forEach(btn => {
           const m = btn.textContent.match(/^(\d+)/);
           const n = m ? Number(m[1]) : null;
