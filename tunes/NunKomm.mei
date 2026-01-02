@@ -41,7 +41,7 @@
                      <!-- ******Time signature *********-->
                 <meterSig count="4" unit="4"/>
                      <!-- ******Key signature *********-->
-                
+                  <keySig sig="0f"/>
                           <!-- ******Key  *********-->
                 <key pname="a"  mode="minor"/>
               </staffDef>
@@ -148,3 +148,4 @@
   </music>
 
 </mei>
+
