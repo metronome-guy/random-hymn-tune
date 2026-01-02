@@ -19,7 +19,7 @@
         <title>Valet Dir</title>
 
              <!-- ******Key (in lowercase) and Mode (in lowercase)****** -->
-        <key pname="c" mode="major"/>
+        <key pname="d" mode="major"/>
 
              <!-- ******Duple or Triple (capitalized) *********-->
         <annot type="meterGroup">Duple</annot>
@@ -41,9 +41,9 @@
                      <!-- ******Time signature *********-->
                 <meterSig count="4" unit="4"/>
                      <!-- ******Key signature *********-->
-                
+                <keySig sig="2s"/>
                           <!-- ******Key  *********-->
-                <key pname="c" mode="major"/>
+                <key pname="d" mode="major"/>
               </staffDef>
             </staffGrp>
           </scoreDef>
