@@ -26,6 +26,7 @@
 
                     <!-- ******Collection *********-->
         <identifier type="collection">Hymnal 1982</identifier>
+        <identifier type="collection">GH favorite</identifier>
       </work>
     </workDesc>
   </meiHead>
@@ -211,3 +212,4 @@
   </music>
 
 </mei>
+
