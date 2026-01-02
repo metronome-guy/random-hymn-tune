@@ -41,7 +41,7 @@
                      <!-- ******Time signature *********-->
                 <meterSig count="3" unit="2"/>
                      <!-- ******Key signature *********-->
-                <keySig sig="2f" mode="minor"/>
+                <keySig sig="2f"/>
                           <!-- ******Key  *********-->
                 <key pname="g" mode="minor"/>
               </staffDef>
