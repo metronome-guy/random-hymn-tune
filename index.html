@@ -26,9 +26,6 @@
       --btn-red-hover: #b71c1c;
       --btn-pink: #ff6fb3;
       --btn-pink-hover: #ff4fa3;
-
-      --btn-gray: #666;
-      --btn-gray-hover: #444;
     }
 
     body {
@@ -155,7 +152,8 @@
     <button id="octUpBtn"   class="btn-oct" type="button" disabled title="Transpose up 8va">8va↑</button>
     <button id="octDownBtn" class="btn-oct" type="button" disabled title="Transpose down 8va">8va↓</button>
 
-    <button id="enharmonicBtn" class="btn-music" type="button" disabled title="Toggle enharmonic spelling (Db/C#, Eb/D#, Gb/F#, Ab/G#)">♯/♭</button>
+    <button id="enharmonicBtn" class="btn-music" type="button" disabled
+      title="Toggle enharmonic spelling (Db/C#, Eb/D#, Gb/F#, Ab/G#, Cb/B)">♯/♭</button>
 
     <button id="halfUpBtn" class="btn-music" type="button" disabled title="Transpose current tune up a half step">Half step↑</button>
     <button id="halfDownBtn" class="btn-music" type="button" disabled title="Transpose current tune down a half step">Half step↓</button>
@@ -173,7 +171,6 @@
     </div>
   </div>
 
-  <!-- Title + music ABOVE the option panels -->
   <div id="titleBar" aria-live="polite">Title: —</div>
   <div id="viewer"><div id="svg"></div></div>
 
@@ -246,39 +243,36 @@
 
     let vrvToolkit = null;
     let currentFile = null;
-    let currentTargetKey = "";
+    let currentTargetKey = ""; // tonic spelling (may be sharps/flats)
     let currentMode = "";
     let originalTonic = "";
 
-    // User shifts for the *current displayed tune*
+    // user octave nudges (keep these)
     let octaveShift = 0;
-    let semitoneShift = 0; // <-- NEW: half-step buttons adjust this
 
-    // Enharmonic preference toggle (Db/C#, Eb/D#, Gb/F#, Ab/G#)
+    // enharmonic preference + explicit pair flipping
     let preferFlats = false;
+
     const ENHARMONIC_PAIRS = [
       ["C#", "Db"],
       ["D#", "Eb"],
       ["F#", "Gb"],
-      ["G#", "Ab"]
+      ["G#", "Ab"],
+      ["B",  "Cb"]
     ];
-
-    // Map each direction
     const ENHARMONIC_MAP = Object.fromEntries(
-      ENHARMONIC_PAIRS.flatMap(([sh, fl]) => [[sh, fl], [fl, sh]])
+      ENHARMONIC_PAIRS.flatMap(([a,b]) => [[a,b],[b,a]])
     );
 
     const originalMeiCache = {};   // filename -> MEI text
     const metadataCache    = {};   // filename -> parsed tags (with version)
 
     const MEI_NS = "http://www.music-encoding.org/ns/mei";
-    const METADATA_CACHE_VERSION = 7;
+    const METADATA_CACHE_VERSION = 8;
 
     // --- ENGRAVING OPTIONS ---
     const baseOptions = {
       scale: 44,
-
-      // Page geometry
       pageWidth: 2200,
       pageHeight: 2000,
       adjustPageHeight: true,
@@ -286,21 +280,13 @@
       pageMarginRight: 20,
       pageMarginTop: 24,
       pageMarginBottom: 24,
-
-      // Vertical spacing
       spacingSystem: 10,
       spacingStaff: 8,
-
-      // Horizontal spacing (initial defaults)
       spacingLinear: 0.16,
       spacingNonLinear: 0.40,
       minMeasureWidth: 44,
-
-      // Layout behavior
       justifyVertically: false,
       breaks: "auto",
-
-      // Lyrics compact
       spacingLyrics: 6
     };
 
@@ -623,7 +609,7 @@
     }
 
     // ------------------------------
-    // Build dynamic Meter UI (from <meterSig count/unit>)
+    // Build dynamic Meter UI
     // ------------------------------
     async function buildMetersUIFromAllTunes() {
       clearRow("meterRow");
@@ -676,6 +662,51 @@
     }
 
     // ------------------------------
+    // Pitch / semitone helpers (for Half-step buttons)
+    // ------------------------------
+    const PITCH_INDEX = {
+      "C":0,"C#":1,"Db":1,"D":2,"D#":3,"Eb":3,"E":4,"F":5,
+      "F#":6,"Gb":6,"G":7,"G#":8,"Ab":8,"A":9,"A#":10,"Bb":10,"B":11,"Cb":11
+    };
+
+    const SHARP_BY_INDEX = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+    const FLAT_BY_INDEX  = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","Cb"];
+
+    function tonicToPc(tonic) {
+      const t = String(tonic || "");
+      return (t in PITCH_INDEX) ? PITCH_INDEX[t] : null;
+    }
+
+    function pickSpellingForPc(pc) {
+      const idx = ((pc % 12) + 12) % 12;
+      return preferFlats ? FLAT_BY_INDEX[idx] : SHARP_BY_INDEX[idx];
+    }
+
+    function shiftTonicBySemitone(tonic, delta) {
+      const pc = tonicToPc(tonic);
+      if (pc == null) return tonic;
+      const next = (pc + delta + 1200) % 12;
+      return pickSpellingForPc(next);
+    }
+
+    // If tonic is one of our explicit enharmonic pairs, force it to current preference
+    function toPreferredSpelling(tonic) {
+      if (!tonic) return "";
+      const t = String(tonic);
+      if (!ENHARMONIC_MAP[t]) return t;
+
+      // Find the pair for this tonic
+      const pair = ENHARMONIC_PAIRS.find(([a,b]) => a === t || b === t);
+      if (!pair) return t;
+
+      // In each pair, we treat:
+      //  - first as "sharp-side" (except B/Cb where first is B)
+      //  - second as "flat-side"
+      const [sharpSide, flatSide] = pair;
+      return preferFlats ? flatSide : sharpSide;
+    }
+
+    // ------------------------------
     // Key signature helpers
     // ------------------------------
     const KEY_SIG_BY_TONIC = {
@@ -689,6 +720,7 @@
       "C#": { major:{t:"s",n:7},   minor:{t:"s",n:4} },
       "G#": { major:null,          minor:{t:"s",n:5} },
       "D#": { major:null,          minor:{t:"s",n:6} },
+      "A#": { major:null,          minor:{t:"s",n:7} },
 
       "F":  { major:{t:"f",n:1},   minor:{t:"f",n:4} },
       "Bb": { major:{t:"f",n:2},   minor:{t:"f",n:5} },
@@ -705,14 +737,7 @@
       if (!m) return tonic;
       let letter = m[1].toUpperCase();
       let acc = (m[2] || ""); if (acc === "B") acc = "b";
-      const canonical = letter + acc;
-      switch (canonical) {
-        case "Cb": return "B";
-        case "B#": return "C";
-        case "E#": return "F";
-        case "Fb": return "E";
-        default:   return canonical;
-      }
+      return letter + acc;
     }
 
     function tonicsByAccidentalsSelected(mode, selectedSet) {
@@ -772,18 +797,7 @@
       return new XMLSerializer().serializeToString(xml);
     }
 
-    function computeDisplayTonic(tonic) {
-      let t = tonic || "";
-      if (!t) return "";
-      if (ENHARMONIC_MAP[t]) {
-        // If preferFlats: prefer the flat spelling; else prefer sharp spelling
-        const alt = ENHARMONIC_MAP[t];
-        if (preferFlats && t.includes("#")) t = alt;
-        if (!preferFlats && t.includes("b")) t = alt;
-      }
-      return t;
-    }
-
+    // Verovio tonic encoding for transpose option
     function tonicToVerovioTransposeTonic(tonic) {
       const m = String(tonic || "").match(/^([A-Ga-g])([#bB])?$/);
       if (!m) return "";
@@ -794,27 +808,24 @@
       return pname + accid;
     }
 
-    // NEW: semitoneShift adds before the tonic param:
-    // Verovio transpose option supports a leading integer semitone offset (e.g., "1", "-1") concatenated with the tonic code.
-    // Example: "1fs" means "up a semitone, then transpose to F# major-ish target".
-    // (If your Verovio build doesn’t accept this, we can swap to applying semitoneShift to the MEI pitches instead.)
+    // Stable transpose: target tonic for major; relative-major tonic for minor.
+    // Half-step buttons now work by changing currentTargetKey itself.
     function computeTransposeOption() {
       if (!currentTargetKey) {
-        // Still allow half-step and octave shifts even if no target key (rare)
-        const parts = [];
-        if (semitoneShift) parts.push(String(semitoneShift));
-        if (octaveShift > 0) parts.push("+".repeat(octaveShift));
-        if (octaveShift < 0) parts.push("-".repeat(-octaveShift));
-        return parts.join("") || "";
+        const prefixOct = octaveShift > 0 ? "+".repeat(octaveShift)
+                       : octaveShift < 0 ? "-".repeat(-octaveShift)
+                       : "";
+        return prefixOct || "";
       }
 
-      const displayMinorOrMajorTonic = computeDisplayTonic(currentTargetKey);
+      let tonicForVerovio = currentTargetKey;
 
-      let tonicForVerovio = displayMinorOrMajorTonic;
       if (currentMode === "minor") {
-        tonicForVerovio = relativeMajorForMinorTonic(displayMinorOrMajorTonic);
-        tonicForVerovio = computeDisplayTonic(tonicForVerovio);
+        tonicForVerovio = relativeMajorForMinorTonic(tonicForVerovio);
       }
+
+      // apply preference spelling for the pairs we support
+      tonicForVerovio = toPreferredSpelling(tonicForVerovio);
 
       const tonicParam = tonicToVerovioTransposeTonic(tonicForVerovio);
       if (!tonicParam) return "";
@@ -823,9 +834,7 @@
                      : octaveShift < 0 ? "-".repeat(-octaveShift)
                      : "";
 
-      const prefixSemi = semitoneShift ? String(semitoneShift) : "";
-
-      return prefixSemi + prefixOct + tonicParam;
+      return prefixOct + tonicParam;
     }
 
     function readInitialKeySigFromXml(xml) {
@@ -872,6 +881,7 @@
       let meiData = await fetchMei(currentFile);
       meiData = stripMeiTitle(meiData);
 
+      // Ensure original key signature is present so Verovio’s transpose stays sane
       if (originalTonic) {
         const modeStr = currentMode === "minor" ? "minor" : "major";
         meiData = applyStartingKeyToMei(meiData, originalTonic, modeStr);
@@ -892,7 +902,7 @@
       updateScaleBadge();
       updateSpacingBadge();
 
-      const displayTonic = currentTargetKey ? computeDisplayTonic(currentTargetKey) : "";
+      const displayTonic = currentTargetKey ? toPreferredSpelling(currentTargetKey) : "";
       const keyShown = currentTargetKey
         ? `${labelFor(displayTonic)} ${currentMode || "major"}`
         : (octaveShift ? (octaveShift > 0 ? "8va↑" : "8va↓") : "original");
@@ -979,9 +989,8 @@
           ? allowedTonics[Math.floor(Math.random() * allowedTonics.length)]
           : "";
 
-        // Reset per-tune nudges
+        // reset per-tune nudges
         octaveShift = 0;
-        semitoneShift = 0;
 
         await renderCurrent();
       } catch (err) {
@@ -990,16 +999,29 @@
       }
     }
 
-    async function octaveUp()      { octaveShift += 1; await renderCurrent(); }
-    async function octaveDown()    { octaveShift -= 1; await renderCurrent(); }
-    async function halfStepUp()    { semitoneShift += 1; await renderCurrent(); }
-    async function halfStepDown()  { semitoneShift -= 1; await renderCurrent(); }
+    async function octaveUp()   { octaveShift += 1; await renderCurrent(); }
+    async function octaveDown() { octaveShift -= 1; await renderCurrent(); }
+
+    // Half-step buttons: *change the currentTargetKey by one semitone* and re-render.
+    // This guarantees true half-step motion and automatically updates status key.
+    async function halfStepUp() {
+      if (!currentTargetKey) currentTargetKey = originalTonic || "C";
+      currentTargetKey = shiftTonicBySemitone(currentTargetKey, +1);
+      // after semitone shift, apply preferred spelling for supported pairs
+      currentTargetKey = toPreferredSpelling(currentTargetKey);
+      await renderCurrent();
+    }
+    async function halfStepDown() {
+      if (!currentTargetKey) currentTargetKey = originalTonic || "C";
+      currentTargetKey = shiftTonicBySemitone(currentTargetKey, -1);
+      currentTargetKey = toPreferredSpelling(currentTargetKey);
+      await renderCurrent();
+    }
 
     // ------------------------------
     // Discover tunes
     // ------------------------------
     async function discoverTunes() {
-      // Try manifest first
       try {
         const res = await fetch(`tunes.json?_=${Date.now()}`, { cache: 'no-cache' });
         if (res.ok) {
@@ -1017,7 +1039,6 @@
         }
       } catch (e) { console.warn('Manifest fetch/parsing failed:', e); }
 
-      // Fallback: directory listing
       try {
         const res = await fetch(`tunes/?_=${Date.now()}`, { cache: 'no-cache' });
         if (res.ok) {
@@ -1064,11 +1085,9 @@
       await discoverTunes();
       if (!tuneFiles || tuneFiles.length === 0) setStatus("—", "No tunes found.", "");
 
-      // Build dynamic lists from actual MEI files
       await buildCollectionsUIFromAllTunes();
       await buildMetersUIFromAllTunes();
 
-      // Hook up Select all / none
       document.getElementById('keysAllBtn').addEventListener('click', keyRangeSelectAll);
       document.getElementById('keysNoneBtn').addEventListener('click', keyRangeSelectNone);
 
@@ -1128,9 +1147,13 @@
             document.getElementById('musicPlusBtn').addEventListener('click', () => musicSizeChange(+SCALE_STEP));
             document.getElementById('musicMinusBtn').addEventListener('click', () => musicSizeChange(-SCALE_STEP));
 
-            document.getElementById('enharmonicBtn').addEventListener('click', () => {
+            document.getElementById('enharmonicBtn').addEventListener('click', async () => {
               preferFlats = !preferFlats;
-              renderCurrent();
+
+              // If current key is one of our supported pairs, flip its spelling to match preference.
+              if (currentTargetKey) currentTargetKey = toPreferredSpelling(currentTargetKey);
+
+              await renderCurrent();
             });
 
             window.addEventListener('resize', debounce(() => renderCurrent(), 150));
