@@ -25,7 +25,7 @@
         <annot type="meterGroup">Triple</annot>
 
                     <!-- ******Collection *********-->
-        <identifier type="collection">Orgelbuchlein</identifier>
+        <identifier type="collection">GH favorite</identifier>
       </work>
     </workDesc>
   </meiHead>
@@ -188,3 +188,4 @@
   </music>
 
 </mei>
+
