@@ -31,111 +31,83 @@
       margin: 0; padding: 12px; background: #f7f7f9;
     }
 
-    #controlsBar {
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;
-    }
-
-    .control-group {
-      display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    }
+    #controlsBar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+    .control-group { display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap; }
 
     button {
-      color: #fff; border: none; border-radius: 8px;
-      padding: 8px 12px; font-size: 0.95rem; cursor: pointer;
+      color:#fff; border:none; border-radius:8px;
+      padding:8px 12px; font-size:0.95rem; cursor:pointer;
       transition: background-color 120ms ease, opacity 120ms ease;
     }
-    button[disabled] { opacity: 0.6; cursor: not-allowed; }
+    button[disabled]{ opacity:0.6; cursor:not-allowed; }
 
-    .btn-random { background: var(--btn-red); }
-    .btn-random:hover { background: var(--btn-red-hover); }
+    .btn-random{ background:var(--btn-red); } .btn-random:hover{ background:var(--btn-red-hover); }
+    .btn-oct{ background:var(--btn-pink); } .btn-oct:hover{ background:var(--btn-pink-hover); }
+    .btn-spacing{ background:var(--btn-blue); } .btn-spacing:hover{ background:var(--btn-blue-hover); }
+    .btn-music{ background:var(--btn-lightblue); color:#042a46; } .btn-music:hover{ background:var(--btn-lightblue-hover); }
 
-    .btn-oct { background: var(--btn-pink); }
-    .btn-oct:hover { background: var(--btn-pink-hover); }
-
-    .btn-spacing { background: var(--btn-blue); }
-    .btn-spacing:hover { background: var(--btn-blue-hover); }
-
-    .btn-music { background: var(--btn-lightblue); color: #042a46; }
-    .btn-music:hover { background: var(--btn-lightblue-hover); }
-
-    .status-badge {
-      padding: 2px 8px; background: #fff; border: 1px solid #ddd; border-radius: 8px;
-      font-weight: 600; color: #333;
+    .status-badge{
+      padding:2px 8px; background:#fff; border:1px solid #ddd; border-radius:8px;
+      font-weight:600; color:#333;
     }
 
-    #titleBar {
-      background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 10px;
-      font-weight: 700; color: #333; margin: 4px 0 8px;
+    #titleBar{
+      background:#fff; border:1px solid #ddd; border-radius:8px; padding:6px 10px;
+      font-weight:700; color:#333; margin:4px 0 8px;
     }
 
-    #viewer {
-      background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 4px; min-height: 200px;
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      margin-bottom: 8px;
+    #viewer{
+      background:#fff; border:1px solid #ddd; border-radius:10px; padding:4px; min-height:200px;
+      overflow-x:auto; overscroll-behavior-x:contain; margin-bottom:8px;
     }
+    #svg{ width:100%; height:auto; }
+    #svg svg{ display:block; }
 
-    #svg { width: 100%; height: auto; }
-    #svg svg { display: block; }
-
-    #optionsBar {
-      display: flex; align-items: flex-start; gap: var(--panel-gap); flex-wrap: wrap; margin-bottom: 8px;
+    #optionsBar{
+      display:flex; align-items:flex-start; gap:var(--panel-gap); flex-wrap:wrap; margin-bottom:8px;
     }
-
-    .panel {
-      background: #fff; border: 1px solid #ddd; border-radius: 8px;
-      padding: var(--panel-pad); display: inline-flex; align-items: flex-start; gap: 10px;
+    .panel{
+      background:#fff; border:1px solid #ddd; border-radius:8px;
+      padding:var(--panel-pad); display:inline-flex; align-items:flex-start; gap:10px;
     }
-    .panel legend { font-weight: 700; font-size: 0.9rem; margin-right: 6px; }
+    .panel legend{ font-weight:700; font-size:0.9rem; margin-right:6px; }
+    #exPanel{ flex-basis:100%; }
+    .row{ display:inline-flex; align-items:center; gap:10px; flex-wrap:wrap; }
 
-    #exPanel { flex-basis: 100%; }
-
-    .row { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-
-    .panel-tools {
-      display: inline-flex;
-      gap: 6px;
-      margin-left: 8px;
-      vertical-align: middle;
+    .panel-tools{ display:inline-flex; gap:6px; margin-left:8px; vertical-align:middle; }
+    .tool-btn{
+      padding:4px 8px; font-size:0.82rem; border-radius:6px;
+      background:var(--gold-lite); color:#3b2f00; border:1px solid var(--gold-lite-border);
+      cursor:pointer;
     }
+    .tool-btn:hover{ background:var(--gold-lite-hover); }
 
-    .tool-btn {
-      padding: 4px 8px;
-      font-size: 0.82rem;
-      border-radius: 6px;
-      background: var(--gold-lite);
-      color: #3b2f00;
-      border: 1px solid var(--gold-lite-border);
-      cursor: pointer;
+    .chk-label{
+      display:inline-flex; align-items:center; gap:6px; font-size:0.95rem;
+      padding:2px 6px; border-radius:6px; border:1px solid #ddd; background:#fff;
     }
-    .tool-btn:hover { background: var(--gold-lite-hover); }
-
-    .chk-label {
-      display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem;
-      padding: 2px 6px; border-radius: 6px; border: 1px solid #ddd; background: #fff;
-      transition: background-color 120ms ease, border-color 120ms ease;
-    }
-    .chk-label input[type="checkbox"] {
-      appearance: none; width: 14px; height: 14px; border-radius: 3px; border: 1px solid #666;
-      position: relative; margin-right: 2px; background: #fff;
+    .chk-label input[type="checkbox"]{
+      appearance:none; width:14px; height:14px; border-radius:3px; border:1px solid #666;
+      position:relative; margin-right:2px; background:#fff;
       transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
     }
-    .chk-label input[type="checkbox"]::after {
-      content: ""; position: absolute; inset: 3px; border-radius: 2px; background: #333; opacity: 0; transition: opacity 120ms ease;
+    .chk-label input[type="checkbox"]::after{
+      content:""; position:absolute; inset:3px; border-radius:2px; background:#333; opacity:0;
+      transition: opacity 120ms ease;
     }
-    .chk-label input[type="checkbox"]:checked {
-      background: var(--gold); border-color: var(--gold-border); box-shadow: 0 0 0 2px rgba(255, 198, 0, 0.25);
+    .chk-label input[type="checkbox"]:checked{
+      background:var(--gold); border-color:var(--gold-border); box-shadow:0 0 0 2px rgba(255,198,0,0.25);
     }
-    .chk-label input[type="checkbox"]:checked::after { opacity: 1; }
+    .chk-label input[type="checkbox"]:checked::after{ opacity:1; }
 
-    .key-range { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .key-range .range-btn {
-      padding: 4px 8px; font-size: 0.85rem; border-radius: 6px; background: #666; color: #fff; border: 1px solid transparent;
+    .key-range{ display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .key-range .range-btn{
+      padding:4px 8px; font-size:0.85rem; border-radius:6px; background:#666; color:#fff; border:1px solid transparent;
     }
-    .key-range .range-btn:hover { background: #444; }
-    .key-range .range-btn.active { background: var(--gold); color: #222; border: 1px solid var(--gold-border); }
+    .key-range .range-btn:hover{ background:#444; }
+    .key-range .range-btn.active{ background:var(--gold); color:#222; border:1px solid var(--gold-border); }
 
-    footer { margin-top: 8px; color: #777; font-size: 0.85rem; }
+    footer{ margin-top:8px; color:#777; font-size:0.85rem; }
   </style>
 </head>
 
@@ -156,14 +128,14 @@
     <button id="halfDownBtn" class="btn-music" type="button" disabled title="Transpose current tune down a half step">Half step↓</button>
 
     <div class="control-group" id="groupSpacing">
-      <button id="spacingPlusBtn"  class="btn-spacing" type="button" disabled title="Increase spacing between notes">spacing+</button>
-      <button id="spacingMinusBtn" class="btn-spacing" type="button" disabled title="Decrease spacing between notes">spacing−</button>
+      <button id="spacingPlusBtn"  class="btn-spacing" type="button" disabled>spacing+</button>
+      <button id="spacingMinusBtn" class="btn-spacing" type="button" disabled>spacing−</button>
       <span id="spacingBadge" class="status-badge">Spacing: —</span>
     </div>
 
     <div class="control-group" id="groupScale">
-      <button id="musicPlusBtn"  class="btn-music" type="button" disabled title="Increase music size">Music+</button>
-      <button id="musicMinusBtn" class="btn-music" type="button" disabled title="Decrease music size">Music−</button>
+      <button id="musicPlusBtn"  class="btn-music" type="button" disabled>Music+</button>
+      <button id="musicMinusBtn" class="btn-music" type="button" disabled>Music−</button>
       <span id="scaleBadge" class="status-badge">Scale: —</span>
     </div>
   </div>
@@ -225,16 +197,12 @@
   <footer><p>created for the University of Iowa Organ Studio</p></footer>
 
   <script>
-    // ------------------------------
-    // State
-    // ------------------------------
     let tuneFiles = [];
-    const accidentalsSelected = new Set([0]);   // default 0#/0♭
+    const accidentalsSelected = new Set([0]); // default 0/0
     const keyRangeButtons = new Map();
 
     const labelFor = k => k.replace(/#/g,"♯").replace(/b/g,"♭");
-
-    const majorMinorVals = ["Major", "Minor"];
+    const majorMinorVals = ["Major","Minor"];
     const excludeTonics  = ["C","C#","Db","D","D#","Eb","E","F","F#","Gb","G","G#","Ab","A","Bb","B","Cb"];
 
     let vrvToolkit = null;
@@ -248,7 +216,7 @@
     const originalMeiCache = {};
     const metadataCache = {};
     const MEI_NS = "http://www.music-encoding.org/ns/mei";
-    const METADATA_CACHE_VERSION = 12;
+    const METADATA_CACHE_VERSION = 13;
 
     const baseOptions = {
       scale: 44,
@@ -278,9 +246,7 @@
       return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
     }
 
-    // ------------------------------
-    // Forbidden key spellings
-    // ------------------------------
+    // Forbidden spellings
     const FORBIDDEN_MAJOR = new Set(["D#","E#","B#"]);
     const FORBIDDEN_MINOR = new Set(["Cb","E#","B#"]);
 
@@ -295,7 +261,6 @@
     }
     function isForbiddenTonicForMode(tonic, mode) {
       const T = normalizeTonic(tonic);
-      if (!T) return false;
       return (mode === "minor") ? FORBIDDEN_MINOR.has(T) : FORBIDDEN_MAJOR.has(T);
     }
     function sanitizeTonicForMode(tonic, mode) {
@@ -308,29 +273,16 @@
       return T;
     }
 
-    // ------------------------------
-    // Enharmonic pairs
-    // ------------------------------
-    const ENHARMONIC_PAIRS = [
-      ["C#", "Db"],
-      ["D#", "Eb"],
-      ["F#", "Gb"],
-      ["G#", "Ab"],
-      ["B",  "Cb"]
-    ];
-    const ENHARMONIC_MAP = Object.fromEntries(
-      ENHARMONIC_PAIRS.flatMap(([a,b]) => [[a,b],[b,a]])
-    );
+    // Enharmonic toggle
+    const ENHARMONIC_PAIRS = [["C#","Db"],["D#","Eb"],["F#","Gb"],["G#","Ab"],["B","Cb"]];
+    const ENHARMONIC_MAP = Object.fromEntries(ENHARMONIC_PAIRS.flatMap(([a,b]) => [[a,b],[b,a]]));
 
     function toPreferredSpelling(tonic, mode) {
       const t = normalizeTonic(tonic);
       if (!ENHARMONIC_MAP[t]) return sanitizeTonicForMode(t, mode);
-      const pair = ENHARMONIC_PAIRS.find(([a,b]) => a === t || b === t);
-      if (!pair) return sanitizeTonicForMode(t, mode);
-
+      const pair = ENHARMONIC_PAIRS.find(([a,b]) => a===t || b===t);
       const [sharpSide, flatSide] = pair;
       const candidate = preferFlats ? flatSide : sharpSide;
-
       if (isForbiddenTonicForMode(candidate, mode)) {
         const other = (candidate === sharpSide) ? flatSide : sharpSide;
         if (!isForbiddenTonicForMode(other, mode)) return other;
@@ -339,41 +291,32 @@
       return candidate;
     }
 
-    // ------------------------------
-    // Pitch classes for transpose
-    // ------------------------------
+    // Pitch class map (never emit A#, B#, E#)
     const PITCH_INDEX = {
       "C":0,"C#":1,"Db":1,"D":2,"D#":3,"Eb":3,"E":4,"F":5,
       "F#":6,"Gb":6,"G":7,"G#":8,"Ab":8,"A":9,"A#":10,"Bb":10,"B":11,"Cb":11,
       "B#":0,"E#":5
     };
-
     function tonicToPc(tonic) {
-      const t = normalizeTonic(String(tonic || ""));
+      const t = normalizeTonic(String(tonic||""));
       return (t in PITCH_INDEX) ? PITCH_INDEX[t] : null;
     }
-
-    // Never emit A#, B#, E#
     function pickSpellingForPc(pc, mode) {
       const idx = ((pc % 12) + 12) % 12;
-      if (idx === 0) return "C";   // never B#
-      if (idx === 5) return "F";   // never E#
-      if (idx === 10) return "Bb"; // never A#
-
+      if (idx === 0) return "C";
+      if (idx === 5) return "F";
+      if (idx === 10) return "Bb";
       const sharp = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"][idx];
       const flat  = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","Cb"][idx];
       return sanitizeTonicForMode(preferFlats ? flat : sharp, mode);
     }
-
     function shiftTonicBySemitone(tonic, delta, mode) {
       const pc = tonicToPc(tonic);
       if (pc == null) return tonic;
       return pickSpellingForPc(pc + delta, mode);
     }
 
-    // ------------------------------
     // Key signature lookup
-    // ------------------------------
     const KEY_SIG_BY_TONIC = {
       "C":  { major:{t:"none",n:0}, minor:{t:"f",n:3} },
       "G":  { major:{t:"s",n:1},   minor:{t:"f",n:2} },
@@ -383,8 +326,6 @@
       "B":  { major:{t:"s",n:5},   minor:{t:"s",n:2} },
       "F#": { major:{t:"s",n:6},   minor:{t:"s",n:3} },
       "C#": { major:{t:"s",n:7},   minor:{t:"s",n:4} },
-
-      // minor-only spellings for stable toggling
       "G#": { major:null,          minor:{t:"s",n:5} },
       "D#": { major:null,          minor:{t:"s",n:6} },
 
@@ -397,16 +338,16 @@
       "Cb": { major:{t:"f",n:7},   minor:{t:"f",n:7} }
     };
 
+    // IMPORTANT: return "0f" for zero (matches your MEIs)
     function keySigFor(tonic, mode) {
       const T = normalizeTonic(tonic);
       const entry = KEY_SIG_BY_TONIC[T];
-      if (!entry) return { sig: "0", label: `${labelFor(T)} ${mode}` };
+      if (!entry) return { sig: "0f" };
 
       const pick = (mode === "minor") ? entry.minor : entry.major;
-      if (!pick || pick.t === "none" || pick.n === 0) return { sig: "0", label: `${labelFor(T)} ${mode}` };
+      if (!pick || pick.t === "none" || pick.n === 0) return { sig: "0f" };
 
-      // MEI <keySig sig="3s"/> etc.
-      return { sig: `${pick.n}${pick.t}`, label: `${labelFor(T)} ${mode}` };
+      return { sig: `${pick.n}${pick.t}` };
     }
 
     function tonicsByAccidentalsSelected(mode, selectedSet) {
@@ -420,9 +361,7 @@
       });
     }
 
-    // ------------------------------
-    // Transpose interval string
-    // ------------------------------
+    // Transpose string
     function intervalLabelForSemisCompound(semitonesAbs) {
       const simple = ["P1","m2","M2","m3","M3","P4","d5","P5","m6","M6","m7","M7"];
       if (semitonesAbs <= 11) return simple[semitonesAbs];
@@ -432,7 +371,6 @@
       if (semitonesAbs === 24) return "P15";
       return "P1";
     }
-
     function computeTransposeIntervalString(origTonic, targetTonic, octaveShift) {
       const o = tonicToPc(origTonic);
       const t = tonicToPc(targetTonic);
@@ -446,83 +384,93 @@
     }
 
     // ------------------------------
-    // CRITICAL FIX: Replace <keySig> elements only (no attributes)
-    // This prevents 8 flats / 10 sharps stacking.
+    // KEY FIX: robust keySig removal (namespace-agnostic) + insert into scoreDef + staffDef
     // ------------------------------
-    function getElementsByTagNS(xml, tag) {
-      return Array.from(xml.getElementsByTagNameNS(MEI_NS, tag));
+    function allElements(xml) {
+      return Array.from(xml.getElementsByTagName("*"));
     }
 
-    function stripKeySigAttributes(el) {
-      // remove any stray attrs we may have added in older versions
-      const attrsToRemove = ["keysig", "key.sig", "key.pname", "key.accid"];
-      attrsToRemove.forEach(a => { if (el.hasAttribute(a)) el.removeAttribute(a); });
+    function stripKeySigAttrsEverywhere(xml) {
+      const attrs = ["keysig","key.sig","key.pname","key.accid"];
+      for (const el of allElements(xml)) {
+        for (const a of attrs) {
+          if (el.hasAttribute && el.hasAttribute(a)) el.removeAttribute(a);
+        }
+      }
     }
 
-    function removeAllKeySigElements(xml) {
-      // remove every <keySig> in the document so we can't stack
-      const keySigs = getElementsByTagNS(xml, "keySig");
-      keySigs.forEach(ks => ks.parentNode && ks.parentNode.removeChild(ks));
+    function removeAllKeySigElementsByLocalName(xml) {
+      // Remove any element whose localName ends with "keySig" (covers keySig regardless of namespace prefix)
+      const els = allElements(xml);
+      for (const el of els) {
+        if ((el.localName || "").toLowerCase() === "keysig") {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }
+      }
     }
 
-    function insertKeySigIntoStaffDefs(xml, sigValue) {
-      const staffDefs = getElementsByTagNS(xml, "staffDef");
-      staffDefs.forEach(sd => {
-        // insert near the top of staffDef (after clef/meterSig if present)
-        const ks = xml.createElementNS(MEI_NS, "keySig");
-        ks.setAttribute("sig", sigValue);
+    function insertKeySigInto(containerEl, sigValue, xml) {
+      const ns = containerEl.namespaceURI || MEI_NS;
+      const ks = xml.createElementNS(ns, "keySig");
+      ks.setAttribute("sig", sigValue);
 
-        // find insertion point
-        const children = Array.from(sd.childNodes).filter(n => n.nodeType === 1);
-        const meter = children.find(n => n.localName === "meterSig");
-        const clef  = children.find(n => n.localName === "clef");
-        const ref = meter ? meter.nextSibling : (clef ? clef.nextSibling : sd.firstChild);
+      // Insert near clef/meterSig if present
+      const children = Array.from(containerEl.childNodes).filter(n => n.nodeType === 1);
+      const meter = children.find(n => (n.localName || "").toLowerCase() === "metersig");
+      const clef  = children.find(n => (n.localName || "").toLowerCase() === "clef");
+      const ref = meter ? meter.nextSibling : (clef ? clef.nextSibling : containerEl.firstChild);
 
-        if (ref) sd.insertBefore(ks, ref);
-        else sd.appendChild(ks);
-
-        stripKeySigAttributes(sd);
-      });
-
-      // also strip scoreDef attrs just in case
-      getElementsByTagNS(xml, "scoreDef").forEach(stripKeySigAttributes);
+      if (ref) containerEl.insertBefore(ks, ref);
+      else containerEl.appendChild(ks);
     }
 
-    function forceKeyInHeaderKeyElement(xml, tonic, mode) {
-      // optional but helps some MEIs: set <key pname="x" accid="s/f" mode="...">
-      const keys = getElementsByTagNS(xml, "key");
+    function forceKeyElement(xml, tonic, mode) {
       const T = normalizeTonic(tonic);
       const m = T.match(/^([A-G])([#b])?$/);
       const pname = m ? m[1].toLowerCase() : "";
       const acc = m ? (m[2] || "") : "";
       const accid = acc === "#" ? "s" : acc === "b" ? "f" : "";
 
-      keys.forEach(k => {
+      const keys = Array.from(xml.getElementsByTagNameNS(MEI_NS, "key"))
+        .concat(Array.from(xml.getElementsByTagName("key"))); // also non-ns
+
+      for (const k of keys) {
         if (pname) k.setAttribute("pname", pname);
         if (accid) k.setAttribute("accid", accid);
         else if (k.hasAttribute("accid")) k.removeAttribute("accid");
         if (mode) k.setAttribute("mode", mode);
-      });
+      }
     }
 
     function applyForcedKeySigByElement(meiText, tonic, mode) {
       const safeT = toPreferredSpelling(sanitizeTonicForMode(tonic, mode), mode);
       const { sig } = keySigFor(safeT, mode);
+
       const xml = new DOMParser().parseFromString(meiText, "application/xml");
 
-      removeAllKeySigElements(xml);
-      insertKeySigIntoStaffDefs(xml, sig || "0");
-      forceKeyInHeaderKeyElement(xml, safeT, mode);
+      stripKeySigAttrsEverywhere(xml);
+      removeAllKeySigElementsByLocalName(xml);
+
+      // Insert into scoreDef(s) AND staffDef(s)
+      const scoreDefs = Array.from(xml.getElementsByTagNameNS(MEI_NS, "scoreDef"))
+        .concat(Array.from(xml.getElementsByTagName("scoreDef")));
+      const staffDefs = Array.from(xml.getElementsByTagNameNS(MEI_NS, "staffDef"))
+        .concat(Array.from(xml.getElementsByTagName("staffDef")));
+
+      for (const sd of scoreDefs) insertKeySigInto(sd, sig, xml);
+      for (const st of staffDefs) insertKeySigInto(st, sig, xml);
+
+      forceKeyElement(xml, safeT, mode);
 
       return new XMLSerializer().serializeToString(xml);
     }
 
     // ------------------------------
-    // MEI fetch / metadata
+    // Fetch + metadata
     // ------------------------------
     async function fetchMei(fileName) {
       if (!originalMeiCache[fileName]) {
-        const res = await fetch(fileName, { cache: 'no-cache' });
+        const res = await fetch(fileName, { cache: "no-cache" });
         if (!res.ok) throw new Error(`Failed to fetch ${fileName}: ${res.status}`);
         originalMeiCache[fileName] = await res.text();
       }
@@ -535,14 +483,15 @@
     }
 
     function meterSigFromXml(xml) {
-      const mSig = firstByTagNS(xml, "meterSig");
+      const mSig = firstByTagNS(xml, "meterSig") || xml.getElementsByTagName("meterSig")[0];
       const count = (mSig?.getAttribute("count") || "").trim();
-      const unit  = (mSig?.getAttribute("unit")  || "").trim();
+      const unit  = (mSig?.getAttribute("unit") || "").trim();
       return (count && unit) ? `${count}/${unit}` : "";
     }
 
     function collectionsFromXml(xml) {
-      const ids = Array.from(xml.getElementsByTagNameNS(MEI_NS, "identifier"));
+      const ids = Array.from(xml.getElementsByTagNameNS(MEI_NS, "identifier"))
+        .concat(Array.from(xml.getElementsByTagName("identifier")));
       return ids
         .filter(el => (el.getAttribute("type") || "").toLowerCase() === "collection")
         .map(el => (el.textContent || "").trim())
@@ -556,479 +505,367 @@
       const meiText = await fetchMei(fileName);
       const xml = new DOMParser().parseFromString(meiText, "application/xml");
 
-      const keyEl = firstByTagNS(xml, "key");
-      const keyMode  = (keyEl?.getAttribute("mode")  || "").trim().toLowerCase();
+      const keyEl = firstByTagNS(xml, "key") || xml.getElementsByTagName("key")[0];
+      const keyMode  = (keyEl?.getAttribute("mode") || "major").trim().toLowerCase();
       const pname    = (keyEl?.getAttribute("pname") || "").trim().toLowerCase();
       const accid    = (keyEl?.getAttribute("accid") || "").trim().toLowerCase();
-      const keyTonic = pname ? (pname.toUpperCase() + (accid === "s" ? "#" : accid === "f" ? "b" : "")) : "";
+      const keyTonic = pname ? (pname.toUpperCase() + (accid==="s" ? "#" : accid==="f" ? "b" : "")) : "";
 
-      const titleEl = firstByTagNS(xml, "title");
+      const titleEl = firstByTagNS(xml, "title") || xml.getElementsByTagName("title")[0];
       const title = (titleEl?.textContent || "").trim();
 
       const meterSig = meterSigFromXml(xml);
       const collections = collectionsFromXml(xml);
 
-      const out = {
-        keyMode: keyMode || "major",
-        keyTonic,
-        title,
-        meterSig,
-        collections,
-        __v: METADATA_CACHE_VERSION
-      };
+      const out = { keyMode, keyTonic, title, meterSig, collections, __v: METADATA_CACHE_VERSION };
       metadataCache[fileName] = out;
       return out;
     }
 
-    // ------------------------------
-    // Strip title in SVG
-    // ------------------------------
     function stripMeiTitle(meiText) {
       try {
         const xml = new DOMParser().parseFromString(meiText, "application/xml");
-        const titleStmts = Array.from(xml.getElementsByTagNameNS(MEI_NS, "titleStmt"));
-        titleStmts.forEach(ts => ts.parentNode && ts.parentNode.removeChild(ts));
+        const ts = Array.from(xml.getElementsByTagNameNS(MEI_NS, "titleStmt"))
+          .concat(Array.from(xml.getElementsByTagName("titleStmt")));
+        ts.forEach(x => x.parentNode && x.parentNode.removeChild(x));
         return new XMLSerializer().serializeToString(xml);
-      } catch (e) {
-        return meiText;
-      }
+      } catch (e) { return meiText; }
     }
 
     // ------------------------------
-    // UI builders
+    // UI helpers
     // ------------------------------
-    function clearRow(containerId) {
-      const row = document.getElementById(containerId);
-      while (row.firstChild) row.removeChild(row.firstChild);
+    function clearRow(id){ const r=document.getElementById(id); while(r.firstChild) r.removeChild(r.firstChild); }
+    function setAllCheckboxes(id, checked){
+      document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(el => { if(!el.disabled) el.checked = !!checked; });
     }
-
-    function setAllCheckboxes(containerId, checked) {
-      document.querySelectorAll(`#${containerId} input[type="checkbox"]`).forEach(el => {
-        if (!el.disabled) el.checked = !!checked;
+    function addPlainCheckboxes(containerId, values, defaultChecked=true, labelTransform=null){
+      const row=document.getElementById(containerId);
+      values.forEach(val=>{
+        const id=`${containerId}_${String(val).replace(/[^A-Za-z0-9]/g,'_')}`;
+        const label=document.createElement('label'); label.className='chk-label';
+        const cb=document.createElement('input'); cb.type='checkbox'; cb.id=id; cb.value=val; cb.checked=defaultChecked;
+        const span=document.createElement('span'); span.textContent=labelTransform?labelTransform(val):val;
+        label.appendChild(cb); label.appendChild(span); row.appendChild(label);
       });
     }
-
-    function addPlainCheckboxes(containerId, values, defaultChecked = true, labelTransform = null) {
-      const row = document.getElementById(containerId);
-      values.forEach(val => {
-        const id = `${containerId}_${String(val).replace(/[^A-Za-z0-9]/g,'_')}`;
-        const label = document.createElement('label');
-        label.className = 'chk-label';
-        const cb = document.createElement('input');
-        cb.type = 'checkbox'; cb.id = id; cb.value = val; cb.checked = defaultChecked;
-        const span = document.createElement('span');
-        span.textContent = labelTransform ? labelTransform(val) : val;
-        label.appendChild(cb); label.appendChild(span);
-        row.appendChild(label);
+    function addExcludeCheckboxes(containerId, values){
+      const row=document.getElementById(containerId);
+      values.forEach(val=>{
+        const id=`${containerId}_${String(val).replace(/[^A-Za-z0-9]/g,'_')}`;
+        const label=document.createElement('label'); label.className='chk-label';
+        const cb=document.createElement('input'); cb.type='checkbox'; cb.id=id; cb.value=val; cb.checked=false;
+        const span=document.createElement('span'); span.textContent=labelFor(val);
+        label.appendChild(cb); label.appendChild(span); row.appendChild(label);
       });
     }
-
-    function addExcludeCheckboxes(containerId, values) {
-      const row = document.getElementById(containerId);
-      values.forEach(val => {
-        const id = `${containerId}_${String(val).replace(/[^A-Za-z0-9]/g,'_')}`;
-        const label = document.createElement('label');
-        label.className = 'chk-label';
-        const cb = document.createElement('input');
-        cb.type = 'checkbox'; cb.id = id; cb.value = val; cb.checked = false;
-        const span = document.createElement('span');
-        span.textContent = labelFor(val);
-        label.appendChild(cb); label.appendChild(span);
-        row.appendChild(label);
-      });
-    }
-
-    function getChecked(containerId) {
-      const out = [];
-      document.querySelectorAll(`#${containerId} input[type="checkbox"]`).forEach(el => {
-        if (el.checked) out.push(el.value);
-      });
+    function getChecked(containerId){
+      const out=[];
+      document.querySelectorAll(`#${containerId} input[type="checkbox"]`).forEach(el=>{ if(el.checked) out.push(el.value); });
       return out;
     }
-
-    function addAccidentalRangeButtons(containerId) {
-      const row = document.getElementById(containerId);
-      for (let n = 0; n <= 7; n++) {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'range-btn' + (accidentalsSelected.has(n) ? ' active' : '');
-        btn.textContent = `${n}#/${n}♭`;
-        btn.title = `Include keys with exactly ${n} accidentals (sharp or flat)`;
-        btn.addEventListener('click', () => {
-          if (accidentalsSelected.has(n)) { accidentalsSelected.delete(n); btn.classList.remove('active'); }
+    function addAccidentalRangeButtons(containerId){
+      const row=document.getElementById(containerId);
+      for(let n=0;n<=7;n++){
+        const btn=document.createElement('button');
+        btn.type='button';
+        btn.className='range-btn'+(accidentalsSelected.has(n)?' active':'');
+        btn.textContent=`${n}#/${n}♭`;
+        btn.addEventListener('click',()=>{
+          if(accidentalsSelected.has(n)){ accidentalsSelected.delete(n); btn.classList.remove('active'); }
           else { accidentalsSelected.add(n); btn.classList.add('active'); }
         });
         row.appendChild(btn);
         keyRangeButtons.set(n, btn);
       }
     }
+    function keyRangeSelectAll(){ for(let n=0;n<=7;n++) accidentalsSelected.add(n); for(let n=0;n<=7;n++) keyRangeButtons.get(n)?.classList.add('active'); }
+    function keyRangeSelectNone(){ accidentalsSelected.clear(); for(let n=0;n<=7;n++) keyRangeButtons.get(n)?.classList.remove('active'); }
 
-    function keyRangeSelectAll() {
-      for (let n = 0; n <= 7; n++) accidentalsSelected.add(n);
-      for (let n = 0; n <= 7; n++) keyRangeButtons.get(n)?.classList.add('active');
-    }
-
-    function keyRangeSelectNone() {
-      accidentalsSelected.clear();
-      for (let n = 0; n <= 7; n++) keyRangeButtons.get(n)?.classList.remove('active');
-    }
-
-    // ------------------------------
-    // Dynamic meters / collections
-    // ------------------------------
-    async function buildCollectionsUIFromAllTunes() {
+    async function buildCollectionsUIFromAllTunes(){
       clearRow("colRow");
-      const set = new Set();
-      for (const f of tuneFiles) {
-        try {
-          const md = await getMetadata(f);
-          (md.collections || []).forEach(c => set.add(c));
-        } catch (e) {}
-      }
-      const list = Array.from(set).sort((a,b) => a.localeCompare(b));
-      addPlainCheckboxes("colRow", list.length ? list : ["(no collections found)"], true);
-      if (!list.length) document.querySelector(`#colRow input[type="checkbox"]`)?.setAttribute("disabled", "true");
+      const set=new Set();
+      for(const f of tuneFiles){ try{ (await getMetadata(f)).collections.forEach(c=>set.add(c)); }catch(e){} }
+      const list=Array.from(set).sort((a,b)=>a.localeCompare(b));
+      addPlainCheckboxes("colRow", list.length?list:["(no collections found)"], true);
+      if(!list.length) document.querySelector(`#colRow input[type="checkbox"]`)?.setAttribute("disabled","true");
     }
-
-    async function buildMetersUIFromAllTunes() {
+    async function buildMetersUIFromAllTunes(){
       clearRow("meterRow");
-      const set = new Set();
-      for (const f of tuneFiles) {
-        try {
-          const md = await getMetadata(f);
-          if (md.meterSig) set.add(md.meterSig);
-        } catch (e) {}
-      }
-      const list = Array.from(set).sort((a,b) => a.localeCompare(b));
-      addPlainCheckboxes("meterRow", list.length ? list : ["(no meters found)"], true);
-      if (!list.length) document.querySelector(`#meterRow input[type="checkbox"]`)?.setAttribute("disabled", "true");
+      const set=new Set();
+      for(const f of tuneFiles){ try{ const m=(await getMetadata(f)).meterSig; if(m) set.add(m); }catch(e){} }
+      const list=Array.from(set).sort((a,b)=>a.localeCompare(b));
+      addPlainCheckboxes("meterRow", list.length?list:["(no meters found)"], true);
+      if(!list.length) document.querySelector(`#meterRow input[type="checkbox"]`)?.setAttribute("disabled","true");
     }
 
-    // ------------------------------
-    // Status badges
-    // ------------------------------
-    function updateScaleBadge() {
-      const badge = document.getElementById('scaleBadge');
-      if (badge) badge.textContent = `Scale: ${baseOptions.scale}`;
+    // Status + badges
+    function updateScaleBadge(){ document.getElementById('scaleBadge').textContent = `Scale: ${baseOptions.scale}`; }
+    function updateSpacingBadge(){
+      document.getElementById('spacingBadge').textContent = `Spacing: ${baseOptions.spacingLinear.toFixed(2)} / ${baseOptions.spacingNonLinear.toFixed(2)}`;
     }
-    function updateSpacingBadge() {
-      const badge = document.getElementById('spacingBadge');
-      if (badge) {
-        const lin = baseOptions.spacingLinear.toFixed(2);
-        const non = baseOptions.spacingNonLinear.toFixed(2);
-        badge.textContent = `Spacing: ${lin} / ${non}`;
-      }
+    function setStatus(fileName, keyShown, titleText=""){
+      const tuneName=(fileName && fileName!=="—") ? fileName.split('/').pop().replace(/\.mei$/i,'') : "—";
+      document.getElementById('statusTune').textContent=`File: ${tuneName}`;
+      document.getElementById('statusKey').textContent=`Key: ${keyShown||"—"}`;
+      document.getElementById('titleBar').textContent=`Title: ${titleText||"—"}`;
     }
 
-    function setStatus(fileName, keyShown, titleText = "") {
-      const tuneName = (fileName && fileName !== "—") ? fileName.split('/').pop().replace(/\.mei$/i,'') : "—";
-      document.getElementById('statusTune').textContent = `File: ${tuneName}`;
-      document.getElementById('statusKey').textContent  = `Key: ${keyShown || "—"}`;
-      document.getElementById('titleBar').textContent   = `Title: ${titleText || "—"}`;
-    }
-
-    // ------------------------------
     // Discover tunes
-    // ------------------------------
-    async function discoverTunes() {
-      // manifest
-      try {
-        const res = await fetch(`tunes.json?_=${Date.now()}`, { cache: 'no-cache' });
-        if (res.ok) {
-          const arr = await res.json();
-          const mei = (Array.isArray(arr) ? arr : [])
-            .filter(x => typeof x === 'string')
-            .map(x => x.split('#')[0].split('?')[0])
-            .filter(x => /\.mei$/i.test(x))
-            .map(x => x.replace(/^\.?\//,'').replace(/\\/g,'/'));
-          if (mei.length) { tuneFiles = Array.from(new Set(mei)); return; }
+    async function discoverTunes(){
+      try{
+        const res=await fetch(`tunes.json?_=${Date.now()}`,{cache:"no-cache"});
+        if(res.ok){
+          const arr=await res.json();
+          const mei=(Array.isArray(arr)?arr:[])
+            .filter(x=>typeof x==="string")
+            .map(x=>x.split('#')[0].split('?')[0])
+            .filter(x=>/\.mei$/i.test(x))
+            .map(x=>x.replace(/^\.?\//,'').replace(/\\/g,'/'));
+          if(mei.length){ tuneFiles=Array.from(new Set(mei)); return; }
         }
-      } catch (e) {}
-
-      // directory listing fallback
-      try {
-        const res = await fetch(`tunes/?_=${Date.now()}`, { cache: 'no-cache' });
-        if (res.ok) {
-          const html = await res.text();
-          const tmp = document.createElement('div'); tmp.innerHTML = html;
-          const hrefs = Array.from(tmp.querySelectorAll('a[href]')).map(a => a.getAttribute('href')).filter(Boolean);
-          const paths = hrefs
-            .map(h => h.split('#')[0].split('?')[0])
-            .filter(h => /\.mei$/i.test(h))
-            .map(h => (h.startsWith('tunes/') ? h : `tunes/${h.replace(/^\.?\//,'')}`));
-          if (paths.length) { tuneFiles = Array.from(new Set(paths)); return; }
+      }catch(e){}
+      try{
+        const res=await fetch(`tunes/?_=${Date.now()}`,{cache:"no-cache"});
+        if(res.ok){
+          const html=await res.text();
+          const tmp=document.createElement('div'); tmp.innerHTML=html;
+          const hrefs=Array.from(tmp.querySelectorAll('a[href]')).map(a=>a.getAttribute('href')).filter(Boolean);
+          const paths=hrefs
+            .map(h=>h.split('#')[0].split('?')[0])
+            .filter(h=>/\.mei$/i.test(h))
+            .map(h=>(h.startsWith('tunes/')?h:`tunes/${h.replace(/^\.?\//,'')}`));
+          if(paths.length){ tuneFiles=Array.from(new Set(paths)); return; }
         }
-      } catch (e) {}
-
-      tuneFiles = [];
+      }catch(e){}
+      tuneFiles=[];
     }
 
-    // ------------------------------
-    // Rendering
-    // ------------------------------
-    function computeResponsivePageWidth() {
-      const viewer = document.getElementById('viewer');
-      const w = viewer.clientWidth;
-      return Math.max(1400, Math.floor(w * 2.25));
+    // Render
+    function computeResponsivePageWidth(){
+      const w=document.getElementById('viewer').clientWidth;
+      return Math.max(1400, Math.floor(w*2.25));
     }
 
-    async function renderCurrent() {
-      if (!currentFile || !vrvToolkit) return;
+    async function renderCurrent(){
+      if(!currentFile || !vrvToolkit) return;
 
-      let meiData = await fetchMei(currentFile);
-      meiData = stripMeiTitle(meiData);
+      let meiData=await fetchMei(currentFile);
+      meiData=stripMeiTitle(meiData);
 
-      // FIX: force key sig by REPLACING <keySig>, not by attrs
-      if (currentTargetKey && currentMode) {
-        meiData = applyForcedKeySigByElement(meiData, currentTargetKey, currentMode);
+      if(currentTargetKey && currentMode){
+        meiData=applyForcedKeySigByElement(meiData, currentTargetKey, currentMode);
       }
 
       const transposeStr = (currentTargetKey && originalTonic)
         ? computeTransposeIntervalString(originalTonic, currentTargetKey, octaveShift)
         : "";
 
-      const options = {
+      vrvToolkit.setOptions({
         ...baseOptions,
         pageWidth: computeResponsivePageWidth(),
         transpose: transposeStr
-      };
+      });
 
-      vrvToolkit.setOptions(options);
       vrvToolkit.loadData(meiData);
-
-      const svg = vrvToolkit.renderToSVG(1, {});
-      document.getElementById('svg').innerHTML = svg;
+      document.getElementById('svg').innerHTML = vrvToolkit.renderToSVG(1,{});
 
       updateScaleBadge();
       updateSpacingBadge();
 
-      const shown = currentTargetKey
-        ? `${labelFor(currentTargetKey)} ${currentMode}`
-        : "original";
-
-      try {
-        const md = await getMetadata(currentFile);
-        setStatus(currentFile, shown, (md.title || "").trim());
-      } catch (e) {
+      const shown = currentTargetKey ? `${labelFor(currentTargetKey)} ${currentMode}` : "original";
+      try{
+        const md=await getMetadata(currentFile);
+        setStatus(currentFile, shown, (md.title||"").trim());
+      }catch(e){
         setStatus(currentFile, shown, "");
       }
     }
 
-    // ------------------------------
-    // Selection
-    // ------------------------------
-    function inferTonicFromKeySig(mode, t, n) {
-      const keyMode = (mode === "minor") ? "minor" : "major";
-      const found = Object.keys(KEY_SIG_BY_TONIC).find(T => {
-        const pick = KEY_SIG_BY_TONIC[T][keyMode];
-        return pick && pick.t === t && pick.n === n;
+    // Filtering & selection
+    function inferTonicFromKeySig(mode, t, n){
+      const keyMode=(mode==="minor")?"minor":"major";
+      const found=Object.keys(KEY_SIG_BY_TONIC).find(T=>{
+        const pick=KEY_SIG_BY_TONIC[T][keyMode];
+        return pick && pick.t===t && pick.n===n;
       });
-      if (!found && n === 0) return keyMode === "major" ? "C" : "A";
+      if(!found && n===0) return keyMode==="major" ? "C" : "A";
       return found || "";
     }
 
-    function readInitialKeySigFromXml(xml) {
-      const staffDef = firstByTagNS(xml, "staffDef");
-      const ks = staffDef ? Array.from(staffDef.getElementsByTagNameNS(MEI_NS, "keySig"))[0] : null;
+    function readInitialKeySigFromXml(xml){
+      const staffDef = firstByTagNS(xml,"staffDef") || xml.getElementsByTagName("staffDef")[0];
+      const ks = staffDef ? Array.from(staffDef.getElementsByTagNameNS(MEI_NS,"keySig")).concat(Array.from(staffDef.getElementsByTagName("keySig")))[0] : null;
       const sig = (ks?.getAttribute("sig") || "").trim();
-
-      if (!sig || sig === "0" || sig === "0f" || sig === "0s") return { t: "none", n: 0 };
       const m = sig.match(/^(\d+)([sf])$/);
-      if (!m) return { t: "none", n: 0 };
-      return { t: m[2], n: Number(m[1]) };
+      if(!m) return {t:"none", n:0};
+      return {t:m[2], n:Number(m[1])};
     }
 
-    async function pickRandomFilteredTune() {
-      const mmSelected = getChecked('mmRow');
-      const meterSelected = getChecked('meterRow');
-      const colSelected = getChecked('colRow');
+    async function pickRandomFilteredTune(){
+      const mmSelected=getChecked("mmRow");
+      const meterSelected=getChecked("meterRow");
+      const colSelected=getChecked("colRow");
 
-      const candidates = [];
-      for (const f of tuneFiles) {
-        try {
-          const md = await getMetadata(f);
-
-          const mmTag = (md.keyMode?.toLowerCase() === "minor") ? "Minor" : "Major";
-          const mmOk  = mmSelected.length ? mmSelected.includes(mmTag) : true;
-
+      const candidates=[];
+      for(const f of tuneFiles){
+        try{
+          const md=await getMetadata(f);
+          const mmTag=(md.keyMode==="minor")?"Minor":"Major";
+          const mmOk = mmSelected.length ? mmSelected.includes(mmTag) : true;
           const meterOk = meterSelected.length ? (md.meterSig ? meterSelected.includes(md.meterSig) : false) : true;
-
-          const cols = (md.collections && md.collections.length) ? md.collections : [];
-          const colOk = colSelected.length ? cols.some(c => colSelected.includes(c)) : true;
-
-          if (mmOk && meterOk && colOk) candidates.push(f);
-        } catch (e) {}
+          const cols = md.collections || [];
+          const colOk = colSelected.length ? cols.some(c=>colSelected.includes(c)) : true;
+          if(mmOk && meterOk && colOk) candidates.push(f);
+        }catch(e){}
       }
-
-      if (!candidates.length) throw new Error("No tunes match the selected tag filters.");
-      return candidates[Math.floor(Math.random() * candidates.length)];
+      if(!candidates.length) throw new Error("No tunes match the selected tag filters.");
+      return candidates[Math.floor(Math.random()*candidates.length)];
     }
 
-    async function showRandomTune() {
+    async function showRandomTune(){
       currentFile = await pickRandomFilteredTune();
-
       const md = await getMetadata(currentFile);
-      currentMode = (md.keyMode?.toLowerCase() === "minor") ? "minor" : "major";
+
+      currentMode = (md.keyMode === "minor") ? "minor" : "major";
       originalTonic = md.keyTonic || "";
 
-      if (!originalTonic) {
-        const rawMei = await fetchMei(currentFile);
-        const xml = new DOMParser().parseFromString(rawMei, "application/xml");
-        const { t, n } = readInitialKeySigFromXml(xml);
+      if(!originalTonic){
+        const raw=await fetchMei(currentFile);
+        const xml=new DOMParser().parseFromString(raw,"application/xml");
+        const {t,n}=readInitialKeySigFromXml(xml);
         originalTonic = inferTonicFromKeySig(currentMode, t, n);
       }
 
       let allowed = tonicsByAccidentalsSelected(currentMode, accidentalsSelected);
-      const excluded = new Set(getChecked('exRow'));
+      const excluded = new Set(getChecked("exRow"));
       allowed = allowed.filter(T => !excluded.has(T));
 
-      currentTargetKey = allowed.length ? allowed[Math.floor(Math.random() * allowed.length)] : "";
+      currentTargetKey = allowed.length ? allowed[Math.floor(Math.random()*allowed.length)] : "";
       currentTargetKey = toPreferredSpelling(sanitizeTonicForMode(currentTargetKey, currentMode), currentMode);
 
       octaveShift = 0;
       await renderCurrent();
     }
 
-    // ------------------------------
     // Buttons
-    // ------------------------------
-    async function octaveUp() { octaveShift += 1; await renderCurrent(); }
-    async function octaveDown() { octaveShift -= 1; await renderCurrent(); }
-
-    async function halfStepUp() {
-      if (!currentTargetKey) currentTargetKey = originalTonic || "C";
-      currentTargetKey = shiftTonicBySemitone(currentTargetKey, +1, currentMode);
-      currentTargetKey = toPreferredSpelling(currentTargetKey, currentMode);
+    async function octaveUp(){ octaveShift += 1; await renderCurrent(); }
+    async function octaveDown(){ octaveShift -= 1; await renderCurrent(); }
+    async function halfStepUp(){
+      if(!currentTargetKey) currentTargetKey = originalTonic || "C";
+      currentTargetKey = toPreferredSpelling(shiftTonicBySemitone(currentTargetKey, +1, currentMode), currentMode);
       await renderCurrent();
     }
-
-    async function halfStepDown() {
-      if (!currentTargetKey) currentTargetKey = originalTonic || "C";
-      currentTargetKey = shiftTonicBySemitone(currentTargetKey, -1, currentMode);
-      currentTargetKey = toPreferredSpelling(currentTargetKey, currentMode);
+    async function halfStepDown(){
+      if(!currentTargetKey) currentTargetKey = originalTonic || "C";
+      currentTargetKey = toPreferredSpelling(shiftTonicBySemitone(currentTargetKey, -1, currentMode), currentMode);
       await renderCurrent();
     }
-
-    async function toggleEnharmonic() {
+    async function toggleEnharmonic(){
       preferFlats = !preferFlats;
-      if (currentTargetKey) {
-        const t = normalizeTonic(currentTargetKey);
+      if(currentTargetKey){
+        const t=normalizeTonic(currentTargetKey);
         const swapped = ENHARMONIC_MAP[t] ? ENHARMONIC_MAP[t] : t;
         currentTargetKey = toPreferredSpelling(sanitizeTonicForMode(swapped, currentMode), currentMode);
       }
       await renderCurrent();
     }
 
-    // ------------------------------
-    // Controls (spacing/scale)
-    // ------------------------------
-    function musicSizeChange(delta) {
+    // Controls
+    function musicSizeChange(delta){
       baseOptions.scale = clamp(baseOptions.scale + delta, SCALE_MIN, SCALE_MAX);
-      updateScaleBadge();
-      renderCurrent();
+      updateScaleBadge(); renderCurrent();
     }
-    function spacingChange(delta) {
+    function spacingChange(delta){
       baseOptions.spacingLinear = clamp(baseOptions.spacingLinear + delta, SPACING_MIN, SPACING_MAX);
       baseOptions.spacingNonLinear = clamp(baseOptions.spacingNonLinear + delta, SPACING_MIN, SPACING_MAX);
-      updateSpacingBadge();
-      renderCurrent();
+      updateSpacingBadge(); renderCurrent();
     }
 
-    // ------------------------------
-    // Build UI
-    // ------------------------------
-    async function buildUI() {
+    // Init UI
+    async function buildUI(){
       addAccidentalRangeButtons("keysRangeRow");
       addExcludeCheckboxes("exRow", excludeTonics);
       addPlainCheckboxes("mmRow", majorMinorVals, true);
 
-      document.getElementById('keysAllBtn').addEventListener('click', keyRangeSelectAll);
-      document.getElementById('keysNoneBtn').addEventListener('click', keyRangeSelectNone);
+      document.getElementById("keysAllBtn").addEventListener("click", keyRangeSelectAll);
+      document.getElementById("keysNoneBtn").addEventListener("click", keyRangeSelectNone);
 
-      document.getElementById('exAllBtn').addEventListener('click', () => setAllCheckboxes('exRow', true));
-      document.getElementById('exNoneBtn').addEventListener('click', () => setAllCheckboxes('exRow', false));
+      document.getElementById("exAllBtn").addEventListener("click", ()=>setAllCheckboxes("exRow", true));
+      document.getElementById("exNoneBtn").addEventListener("click", ()=>setAllCheckboxes("exRow", false));
 
-      document.getElementById('meterAllBtn').addEventListener('click', () => setAllCheckboxes('meterRow', true));
-      document.getElementById('meterNoneBtn').addEventListener('click', () => setAllCheckboxes('meterRow', false));
+      document.getElementById("meterAllBtn").addEventListener("click", ()=>setAllCheckboxes("meterRow", true));
+      document.getElementById("meterNoneBtn").addEventListener("click", ()=>setAllCheckboxes("meterRow", false));
 
-      document.getElementById('colAllBtn').addEventListener('click', () => setAllCheckboxes('colRow', true));
-      document.getElementById('colNoneBtn').addEventListener('click', () => setAllCheckboxes('colRow', false));
+      document.getElementById("colAllBtn").addEventListener("click", ()=>setAllCheckboxes("colRow", true));
+      document.getElementById("colNoneBtn").addEventListener("click", ()=>setAllCheckboxes("colRow", false));
     }
 
-    // ------------------------------
     // Load Verovio
-    // ------------------------------
-    function loadScript(src) {
-      return new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = src; s.async = true;
-        s.onload = () => resolve();
-        s.onerror = () => reject(new Error(`Failed to load ${src}`));
+    function loadScript(src){
+      return new Promise((resolve,reject)=>{
+        const s=document.createElement("script");
+        s.src=src; s.async=true;
+        s.onload=()=>resolve();
+        s.onerror=()=>reject(new Error(`Failed to load ${src}`));
         document.head.appendChild(s);
       });
     }
 
-    async function init() {
+    async function init(){
       await buildUI();
       await discoverTunes();
       await buildCollectionsUIFromAllTunes();
       await buildMetersUIFromAllTunes();
 
-      if (!tuneFiles.length) setStatus("—", "No tunes found", "");
+      const verovioUrl='https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js?v=latest';
+      try{ await loadScript(verovioUrl); }catch(e){ setStatus("—","Failed to load Verovio",""); return; }
 
-      const verovioUrl = 'https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js?v=latest';
-      try { await loadScript(verovioUrl); } catch (e) {
-        setStatus("—", "Failed to load Verovio", "");
-        return;
-      }
-
-      const waitForGlobal = () => new Promise((resolve, reject) => {
-        const start = performance.now(); const maxWaitMs = 10000;
-        (function poll() {
-          if (window.verovio && window.verovio.module) return resolve();
-          if (performance.now() - start > maxWaitMs) return reject(new Error('Verovio global not found'));
-          setTimeout(poll, 50);
+      const waitForGlobal=()=>new Promise((resolve,reject)=>{
+        const start=performance.now(), maxWaitMs=10000;
+        (function poll(){
+          if(window.verovio && window.verovio.module) return resolve();
+          if(performance.now()-start>maxWaitMs) return reject(new Error("Verovio global not found"));
+          setTimeout(poll,50);
         })();
       });
 
-      try {
+      try{
         await waitForGlobal();
-        window.verovio.module.onRuntimeInitialized = () => {
-          vrvToolkit = new verovio.toolkit();
+        window.verovio.module.onRuntimeInitialized=()=>{
+          vrvToolkit=new verovio.toolkit();
 
-          // enable buttons
           ["randomBtn","octUpBtn","octDownBtn","enharmonicBtn","halfUpBtn","halfDownBtn",
-           "spacingPlusBtn","spacingMinusBtn","musicPlusBtn","musicMinusBtn"]
-            .forEach(id => document.getElementById(id).disabled = false);
+           "spacingPlusBtn","spacingMinusBtn","musicPlusBtn","musicMinusBtn"].forEach(id=>{
+            document.getElementById(id).disabled=false;
+          });
 
-          // wire buttons
-          document.getElementById('randomBtn').addEventListener('click', () => showRandomTune().catch(console.error));
-          document.getElementById('octUpBtn').addEventListener('click', () => octaveUp().catch(console.error));
-          document.getElementById('octDownBtn').addEventListener('click', () => octaveDown().catch(console.error));
-          document.getElementById('enharmonicBtn').addEventListener('click', () => toggleEnharmonic().catch(console.error));
-          document.getElementById('halfUpBtn').addEventListener('click', () => halfStepUp().catch(console.error));
-          document.getElementById('halfDownBtn').addEventListener('click', () => halfStepDown().catch(console.error));
+          document.getElementById("randomBtn").addEventListener("click", ()=>showRandomTune().catch(console.error));
+          document.getElementById("octUpBtn").addEventListener("click", ()=>octaveUp().catch(console.error));
+          document.getElementById("octDownBtn").addEventListener("click", ()=>octaveDown().catch(console.error));
+          document.getElementById("enharmonicBtn").addEventListener("click", ()=>toggleEnharmonic().catch(console.error));
+          document.getElementById("halfUpBtn").addEventListener("click", ()=>halfStepUp().catch(console.error));
+          document.getElementById("halfDownBtn").addEventListener("click", ()=>halfStepDown().catch(console.error));
 
-          document.getElementById('spacingPlusBtn').addEventListener('click', () => spacingChange(+SPACING_STEP));
-          document.getElementById('spacingMinusBtn').addEventListener('click', () => spacingChange(-SPACING_STEP));
-          document.getElementById('musicPlusBtn').addEventListener('click', () => musicSizeChange(+SCALE_STEP));
-          document.getElementById('musicMinusBtn').addEventListener('click', () => musicSizeChange(-SCALE_STEP));
+          document.getElementById("spacingPlusBtn").addEventListener("click", ()=>spacingChange(+SPACING_STEP));
+          document.getElementById("spacingMinusBtn").addEventListener("click", ()=>spacingChange(-SPACING_STEP));
+          document.getElementById("musicPlusBtn").addEventListener("click", ()=>musicSizeChange(+SCALE_STEP));
+          document.getElementById("musicMinusBtn").addEventListener("click", ()=>musicSizeChange(-SCALE_STEP));
 
-          window.addEventListener('resize', debounce(() => renderCurrent(), 150));
+          window.addEventListener("resize", debounce(()=>renderCurrent(),150));
 
           updateScaleBadge();
           updateSpacingBadge();
 
-          if (tuneFiles.length) showRandomTune().catch(console.error);
+          if(tuneFiles.length) showRandomTune().catch(console.error);
         };
-
-        setStatus("—", "Initializing Verovio…", "");
-      } catch (e) {
-        setStatus("—", "Verovio not available", "");
+        setStatus("—","Initializing Verovio…","");
+      }catch(e){
+        setStatus("—","Verovio not available","");
       }
     }
 
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener("DOMContentLoaded", init);
   </script>
 </body>
 </html>
