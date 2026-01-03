@@ -1,0 +1,311 @@
+
+<mei xmlns="http://www.music-encoding.org/ns/mei" meiversion="5.0.0">
+  <meiHead>
+    <fileDesc>
+      <titleStmt>
+                 <!-- ***Title*** -->
+        <title>St. Matthew 567</title>
+      </titleStmt>
+      <pubStmt>
+        <respStmt><resp>Generated example</resp></respStmt>
+      </pubStmt>
+      <sourceDesc><p>Simple melody example</p></sourceDesc>
+    </fileDesc>
+
+    <!-- Work metadata (tags) -->
+    <workDesc>
+      <work>
+                   <!-- ******Title******** -->
+        <title>St. Matthew 567</title>
+
+             <!-- ******Key (in lowercase) and Mode (in lowercase)****** -->
+        <key pname="a" mode="major"/>
+
+             <!-- ******Duple or Triple (capitalized) *********-->
+        <annot type="meterGroup">Triple</annot>
+
+                    <!-- ******Collection *********-->
+        <identifier type="collection">Hymnal 1982</identifier>
+      </work>
+    </workDesc>
+  </meiHead>
+
+ <music>
+    <body>
+      <mdiv>
+        <score>
+           <scoreDef>
+            <staffGrp>
+              <staffDef n="1" lines="5">
+                <clef shape="G" line="2"/>
+                     <!-- ******Time signature *********-->
+                <meterSig count="4" unit="4"/>
+                     <!-- ******Key signature *********-->
+                <keySig sig="3s"/>
+                          <!-- ******Key  *********-->
+                <key pname="a" mode="major"/>
+              </staffDef>
+            </staffGrp>
+          </scoreDef>
+
+    <section>
+
+            <!-- pickup (partial 4): e4 (starts on E above middle C = E4) -->
+            <measure n="0" metcon="false">
+              <staff n="1"><layer n="1">
+                <note xml:id="m0_n1" pname="e" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m1: cis2 e4 -->
+            <measure n="1">
+              <staff n="1"><layer n="1">
+                <note xml:id="m1_n1" pname="c" oct="4" dur="2"/>
+                <note xml:id="m1_n2" pname="e" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m2: a2 cis4 -->
+            <measure n="2">
+              <staff n="1"><layer n="1">
+                <note xml:id="m2_n1" pname="a" oct="4" dur="2"/>
+                <note xml:id="m2_n2" pname="c" oct="5" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m3: b a gis -->
+            <measure n="3">
+              <staff n="1"><layer n="1">
+                <note xml:id="m3_n1" pname="b" oct="4" dur="4"/>
+                <note xml:id="m3_n2" pname="a" oct="4" dur="4"/>
+                <note xml:id="m3_n3" pname="g" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m4: a2 cis4 -->
+            <measure n="4">
+              <staff n="1"><layer n="1">
+                <note xml:id="m4_n1" pname="a" oct="4" dur="2"/>
+                <note xml:id="m4_n2" pname="c" oct="5" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m5: b2 e,4 -->
+            <measure n="5">
+              <staff n="1"><layer n="1">
+                <note xml:id="m5_n1" pname="b" oct="4" dur="2"/>
+                <note xml:id="m5_n2" pname="e" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m6: fis e dis (D# needs accid) -->
+            <measure n="6">
+              <staff n="1"><layer n="1">
+                <note xml:id="m6_n1" pname="f" oct="4" dur="4"/>
+                <note xml:id="m6_n2" pname="e" oct="4" dur="4"/>
+                <note xml:id="m6_n3" pname="d" accid="s" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m7: e2 b'4 -->
+            <measure n="7">
+              <staff n="1"><layer n="1">
+                <note xml:id="m7_n1" pname="e" oct="4" dur="2"/>
+                <note xml:id="m7_n2" pname="b" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m8: gis2 e4 -->
+            <measure n="8">
+              <staff n="1"><layer n="1">
+                <note xml:id="m8_n1" pname="g" oct="4" dur="2"/>
+                <note xml:id="m8_n2" pname="e" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m9: a2 cis4 -->
+            <measure n="9">
+              <staff n="1"><layer n="1">
+                <note xml:id="m9_n1" pname="a" oct="4" dur="2"/>
+                <note xml:id="m9_n2" pname="c" oct="5" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m10: cis b a -->
+            <measure n="10">
+              <staff n="1"><layer n="1">
+                <note xml:id="m10_n1" pname="c" oct="5" dur="4"/>
+                <note xml:id="m10_n2" pname="b" oct="4" dur="4"/>
+                <note xml:id="m10_n3" pname="a" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m11: a gis e -->
+            <measure n="11">
+              <staff n="1"><layer n="1">
+                <note xml:id="m11_n1" pname="a" oct="4" dur="4"/>
+                <note xml:id="m11_n2" pname="g" oct="4" dur="4"/>
+                <note xml:id="m11_n3" pname="e" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m12: a2 cis4 -->
+            <measure n="12">
+              <staff n="1"><layer n="1">
+                <note xml:id="m12_n1" pname="a" oct="4" dur="2"/>
+                <note xml:id="m12_n2" pname="c" oct="5" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m13: b a gis -->
+            <measure n="13">
+              <staff n="1"><layer n="1">
+                <note xml:id="m13_n1" pname="b" oct="4" dur="4"/>
+                <note xml:id="m13_n2" pname="a" oct="4" dur="4"/>
+                <note xml:id="m13_n3" pname="g" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m14: a2 cis,4 -->
+            <measure n="14">
+              <staff n="1"><layer n="1">
+                <note xml:id="m14_n1" pname="a" oct="4" dur="2"/>
+                <note xml:id="m14_n2" pname="c" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m15: cis2 fis4 -->
+            <measure n="15">
+              <staff n="1"><layer n="1">
+                <note xml:id="m15_n1" pname="c" oct="4" dur="2"/>
+                <note xml:id="m15_n2" pname="f" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m16: fis eis fis (E# needs accid) -->
+            <measure n="16">
+              <staff n="1"><layer n="1">
+                <note xml:id="m16_n1" pname="f" oct="4" dur="4"/>
+                <note xml:id="m16_n2" pname="e" accid="s" oct="4" dur="4"/>
+                <note xml:id="m16_n3" pname="f" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m17: gis fis eis -->
+            <measure n="17">
+              <staff n="1"><layer n="1">
+                <note xml:id="m17_n1" pname="g" oct="4" dur="4"/>
+                <note xml:id="m17_n2" pname="f" oct="4" dur="4"/>
+                <note xml:id="m17_n3" pname="e" accid="s" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m18: fis2 gis4 -->
+            <measure n="18">
+              <staff n="1"><layer n="1">
+                <note xml:id="m18_n1" pname="f" oct="4" dur="2"/>
+                <note xml:id="m18_n2" pname="g" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m19: a2 gis8 fis -->
+            <measure n="19">
+              <staff n="1"><layer n="1">
+                <note xml:id="m19_n1" pname="a" oct="4" dur="2"/>
+                <beam>
+                  <note xml:id="m19_n2" pname="g" oct="4" dur="8"/>
+                  <note xml:id="m19_n3" pname="f" oct="4" dur="8"/>
+                </beam>
+              </layer></staff>
+            </measure>
+
+            <!-- m20: e2 dis4 (D#) -->
+            <measure n="20">
+              <staff n="1"><layer n="1">
+                <note xml:id="m20_n1" pname="e" oct="4" dur="2"/>
+                <note xml:id="m20_n2" pname="d" accid="s" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m21: cis2 e4 -->
+            <measure n="21">
+              <staff n="1"><layer n="1">
+                <note xml:id="m21_n1" pname="c" oct="4" dur="2"/>
+                <note xml:id="m21_n2" pname="e" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m22: cis2 e4 -->
+            <measure n="22">
+              <staff n="1"><layer n="1">
+                <note xml:id="m22_n1" pname="c" oct="4" dur="2"/>
+                <note xml:id="m22_n2" pname="e" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m23: e2 a4 -->
+            <measure n="23">
+              <staff n="1"><layer n="1">
+                <note xml:id="m23_n1" pname="e" oct="4" dur="2"/>
+                <note xml:id="m23_n2" pname="a" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m24: fis2 fis4 -->
+            <measure n="24">
+              <staff n="1"><layer n="1">
+                <note xml:id="m24_n1" pname="f" oct="4" dur="2"/>
+                <note xml:id="m24_n2" pname="f" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m25: b2 a4 -->
+            <measure n="25">
+              <staff n="1"><layer n="1">
+                <note xml:id="m25_n1" pname="b" oct="4" dur="2"/>
+                <note xml:id="m25_n2" pname="a" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m26: a gis e -->
+            <measure n="26">
+              <staff n="1"><layer n="1">
+                <note xml:id="m26_n1" pname="a" oct="4" dur="4"/>
+                <note xml:id="m26_n2" pname="g" oct="4" dur="4"/>
+                <note xml:id="m26_n3" pname="e" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m27: a2 cis4 -->
+            <measure n="27">
+              <staff n="1"><layer n="1">
+                <note xml:id="m27_n1" pname="a" oct="4" dur="2"/>
+                <note xml:id="m27_n2" pname="c" oct="5" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m28: b a gis -->
+            <measure n="28">
+              <staff n="1"><layer n="1">
+                <note xml:id="m28_n1" pname="b" oct="4" dur="4"/>
+                <note xml:id="m28_n2" pname="a" oct="4" dur="4"/>
+                <note xml:id="m28_n3" pname="g" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m29: a2 (2 beats because of pickup) || -->
+            <measure n="29" right="dbl">
+              <staff n="1"><layer n="1">
+                <note xml:id="m29_n1" pname="a" oct="4" dur="2"/>
+              </layer></staff>
+            </measure>
+
+          </section>
+
+
+        </score>
+      </mdiv>
+    </body>
+  </music>
+
+</mei>
