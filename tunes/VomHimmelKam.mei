@@ -1,0 +1,198 @@
+
+<mei xmlns="http://www.music-encoding.org/ns/mei" meiversion="5.0.0">
+  <meiHead>
+    <fileDesc>
+      <titleStmt>
+                 <!-- ***Title*** -->
+        <title>Nun Komm der Heiden Heiland</title>
+      </titleStmt>
+      <pubStmt>
+        <respStmt><resp>Generated example</resp></respStmt>
+      </pubStmt>
+      <sourceDesc><p>Simple melody example</p></sourceDesc>
+    </fileDesc>
+
+    <!-- Work metadata (tags) -->
+    <workDesc>
+      <work>
+                   <!-- ******Title******** -->
+        <title>Nun Komm der Heiden Heiland</title>
+
+             <!-- ******Key (in lowercase) and Mode (in lowercase)****** -->
+        <key pname="a" mode="minor"/>
+
+             <!-- ******Duple or Triple (capitalized) *********-->
+        <annot type="meterGroup">Duple</annot>
+
+                    <!-- ******Collection *********-->
+        <identifier type="collection">Orgelbuchlein</identifier>
+      </work>
+    </workDesc>
+  </meiHead>
+
+ <music>
+    <body>
+      <mdiv>
+        <score>
+           <scoreDef>
+            <staffGrp>
+              <staffDef n="1" lines="5">
+                <clef shape="G" line="2"/>
+                     <!-- ******Time signature *********-->
+                <meterSig count="3" unit="2"/>
+                     <!-- ******Key signature *********-->
+                <keySig sig="2f"/>
+                          <!-- ******Key  *********-->
+                <key pname="g"  mode="minor"/>
+              </staffDef>
+            </staffGrp>
+          </scoreDef>
+
+<section>
+
+            <!-- pickup -->
+            <measure n="0" metcon="false">
+              <staff n="1"><layer n="1">
+                <note xml:id="m0_n1" pname="g" oct="4" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m1: g1 g2 -->
+            <measure n="1">
+              <staff n="1"><layer n="1">
+                <note xml:id="m1_n1" pname="g" oct="4" dur="1"/>
+                <note xml:id="m1_n2" pname="g" oct="4" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m2: c1 c2 -->
+            <measure n="2">
+              <staff n="1"><layer n="1">
+                <note xml:id="m2_n1" pname="c" oct="5" dur="1"/>
+                <note xml:id="m2_n2" pname="c" oct="5" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m3: bes1 bes2 -->
+            <measure n="3">
+              <staff n="1"><layer n="1">
+                <note xml:id="m3_n1" pname="b" oct="4" dur="1"/>
+                <note xml:id="m3_n2" pname="b" oct="4" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m4: bes1 fermata bes2 -->
+            <measure n="4">
+              <staff n="1"><layer n="1">
+                <note xml:id="m4_n1" pname="b" oct="4" dur="1"/>
+                <note xml:id="m4_n2" pname="b" oct="4" dur="2"/>
+              </layer></staff>
+              <fermata startid="#m4_n1" place="above"/>
+            </measure>
+
+            <!-- m5: d1 f2 -->
+            <measure n="5">
+              <staff n="1"><layer n="1">
+                <note xml:id="m5_n1" pname="d" oct="5" dur="1"/>
+                <note xml:id="m5_n2" pname="f" oct="5" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m6: d2 c1 -->
+            <measure n="6">
+              <staff n="1"><layer n="1">
+                <note xml:id="m6_n1" pname="d" oct="5" dur="2"/>
+                <note xml:id="m6_n2" pname="c" oct="5" dur="1"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m7: bes fermata bes2 -->
+            <measure n="7">
+              <staff n="1"><layer n="1">
+                <note xml:id="m7_n1" pname="b" oct="4" dur="1"/>
+                <note xml:id="m7_n2" pname="b" oct="4" dur="2"/>
+              </layer></staff>
+              <fermata startid="#m7_n1" place="above"/>
+            </measure>
+
+            <!-- m8: d1 c2 -->
+            <measure n="8">
+              <staff n="1"><layer n="1">
+                <note xml:id="m8_n1" pname="d" oct="5" dur="1"/>
+                <note xml:id="m8_n2" pname="c" oct="5" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m9: c1 bes2 -->
+            <measure n="9">
+              <staff n="1"><layer n="1">
+                <note xml:id="m9_n1" pname="c" oct="5" dur="1"/>
+                <note xml:id="m9_n2" pname="b" oct="4" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m10: c2 a1 -->
+            <measure n="10">
+              <staff n="1"><layer n="1">
+                <note xml:id="m10_n1" pname="c" oct="5" dur="2"/>
+                <note xml:id="m10_n2" pname="a" oct="4" dur="1"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m11: g1 fermata g2 -->
+            <measure n="11">
+              <staff n="1"><layer n="1">
+                <note xml:id="m11_n1" pname="g" oct="4" dur="1"/>
+                <note xml:id="m11_n2" pname="g" oct="4" dur="2"/>
+              </layer></staff>
+              <fermata startid="#m11_n1" place="above"/>
+            </measure>
+
+            <!-- m12: d'1. -->
+            <measure n="12">
+              <staff n="1"><layer n="1">
+                <note xml:id="m12_n1" pname="d" oct="5" dur="1" dots="1"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m13: c1 a2 -->
+            <measure n="13">
+              <staff n="1"><layer n="1">
+                <note xml:id="m13_n1" pname="c" oct="5" dur="1"/>
+                <note xml:id="m13_n2" pname="a" oct="4" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m14: d1 c2 -->
+            <measure n="14">
+              <staff n="1"><layer n="1">
+                <note xml:id="m14_n1" pname="d" oct="5" dur="1"/>
+                <note xml:id="m14_n2" pname="c" oct="5" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m15: bes a1 -->
+            <measure n="15">
+              <staff n="1"><layer n="1">
+                <note xml:id="m15_n1" pname="b" oct="4" dur="2"/>
+                <note xml:id="m15_n2" pname="a" oct="4" dur="1"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m16: g1 fermata  || -->
+            <measure n="16" right="dbl">
+              <staff n="1"><layer n="1">
+                <note xml:id="m16_n1" pname="g" oct="4" dur="1"/>
+              </layer></staff>
+              <fermata startid="#m16_n1" place="above"/>
+            </measure>
+
+          </section>
+
+
+        </score>
+      </mdiv>
+    </body>
+  </music>
+
+</mei>
