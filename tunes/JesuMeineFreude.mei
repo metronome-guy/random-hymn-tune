@@ -4,7 +4,7 @@
     <fileDesc>
       <titleStmt>
                  <!-- ***Title*** -->
-        <title>Jesu Meine Freude BWV 610</title>
+        <title>Jesu Meine Freude</title>
       </titleStmt>
       <pubStmt>
         <respStmt><resp>Generated example</resp></respStmt>
@@ -16,7 +16,7 @@
     <workDesc>
       <work>
                    <!-- ******Title******** -->
-        <title>Jesu Meine Freude BWV 610</title>
+        <title>Jesu Meine Freude</title>
 
              <!-- ******Key (in lowercase) and Mode (in lowercase)****** -->
         <key pname="c" mode="minor"/>
@@ -171,3 +171,4 @@
   </music>
 
 </mei>
+
