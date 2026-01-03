@@ -13,7 +13,7 @@
       --gold: #FFC600;
       --gold-border: #d7a900;
 
-      /* Light gold for ALL/NONE buttons (intentionally lighter than --gold) */
+      /* Light gold for ALL/NONE buttons */
       --gold-lite: #FFEFAD;
       --gold-lite-border: #E6D48A;
       --gold-lite-hover: #FFE68A;
@@ -155,7 +155,10 @@
     <button id="octUpBtn"   class="btn-oct" type="button" disabled title="Transpose up 8va">8va↑</button>
     <button id="octDownBtn" class="btn-oct" type="button" disabled title="Transpose down 8va">8va↓</button>
 
-    <button id="enharmonicBtn" class="btn-music" type="button" disabled title="Toggle Db/C# and Gb/F# spelling">♯/♭</button>
+    <button id="enharmonicBtn" class="btn-music" type="button" disabled title="Toggle enharmonic spelling (Db/C#, Eb/D#, Gb/F#, Ab/G#)">♯/♭</button>
+
+    <button id="halfUpBtn" class="btn-music" type="button" disabled title="Transpose current tune up a half step">Half step↑</button>
+    <button id="halfDownBtn" class="btn-music" type="button" disabled title="Transpose current tune down a half step">Half step↓</button>
 
     <div class="control-group" id="groupSpacing">
       <button id="spacingPlusBtn"  class="btn-spacing" type="button" disabled title="Increase spacing between notes">spacing+</button>
@@ -246,17 +249,30 @@
     let currentTargetKey = "";
     let currentMode = "";
     let originalTonic = "";
-    let octaveShift = 0;
 
-    // Enharmonic preference toggle (only affects C#/Db and F#/Gb)
+    // User shifts for the *current displayed tune*
+    let octaveShift = 0;
+    let semitoneShift = 0; // <-- NEW: half-step buttons adjust this
+
+    // Enharmonic preference toggle (Db/C#, Eb/D#, Gb/F#, Ab/G#)
     let preferFlats = false;
-    const ENHARMONIC_MAP = { "C#":"Db", "Db":"C#", "F#":"Gb", "Gb":"F#" };
+    const ENHARMONIC_PAIRS = [
+      ["C#", "Db"],
+      ["D#", "Eb"],
+      ["F#", "Gb"],
+      ["G#", "Ab"]
+    ];
+
+    // Map each direction
+    const ENHARMONIC_MAP = Object.fromEntries(
+      ENHARMONIC_PAIRS.flatMap(([sh, fl]) => [[sh, fl], [fl, sh]])
+    );
 
     const originalMeiCache = {};   // filename -> MEI text
     const metadataCache    = {};   // filename -> parsed tags (with version)
 
     const MEI_NS = "http://www.music-encoding.org/ns/mei";
-    const METADATA_CACHE_VERSION = 6; // minor UI changes only
+    const METADATA_CACHE_VERSION = 7;
 
     // --- ENGRAVING OPTIONS ---
     const baseOptions = {
@@ -672,6 +688,7 @@
       "F#": { major:{t:"s",n:6},   minor:{t:"s",n:3} },
       "C#": { major:{t:"s",n:7},   minor:{t:"s",n:4} },
       "G#": { major:null,          minor:{t:"s",n:5} },
+      "D#": { major:null,          minor:{t:"s",n:6} },
 
       "F":  { major:{t:"f",n:1},   minor:{t:"f",n:4} },
       "Bb": { major:{t:"f",n:2},   minor:{t:"f",n:5} },
@@ -759,8 +776,10 @@
       let t = tonic || "";
       if (!t) return "";
       if (ENHARMONIC_MAP[t]) {
-        if (preferFlats && t.includes("#")) t = ENHARMONIC_MAP[t];
-        if (!preferFlats && t.includes("b")) t = ENHARMONIC_MAP[t];
+        // If preferFlats: prefer the flat spelling; else prefer sharp spelling
+        const alt = ENHARMONIC_MAP[t];
+        if (preferFlats && t.includes("#")) t = alt;
+        if (!preferFlats && t.includes("b")) t = alt;
       }
       return t;
     }
@@ -775,8 +794,19 @@
       return pname + accid;
     }
 
+    // NEW: semitoneShift adds before the tonic param:
+    // Verovio transpose option supports a leading integer semitone offset (e.g., "1", "-1") concatenated with the tonic code.
+    // Example: "1fs" means "up a semitone, then transpose to F# major-ish target".
+    // (If your Verovio build doesn’t accept this, we can swap to applying semitoneShift to the MEI pitches instead.)
     function computeTransposeOption() {
-      if (!currentTargetKey) return "";
+      if (!currentTargetKey) {
+        // Still allow half-step and octave shifts even if no target key (rare)
+        const parts = [];
+        if (semitoneShift) parts.push(String(semitoneShift));
+        if (octaveShift > 0) parts.push("+".repeat(octaveShift));
+        if (octaveShift < 0) parts.push("-".repeat(-octaveShift));
+        return parts.join("") || "";
+      }
 
       const displayMinorOrMajorTonic = computeDisplayTonic(currentTargetKey);
 
@@ -789,11 +819,13 @@
       const tonicParam = tonicToVerovioTransposeTonic(tonicForVerovio);
       if (!tonicParam) return "";
 
-      const prefix = octaveShift > 0 ? "+".repeat(octaveShift)
-                   : octaveShift < 0 ? "-".repeat(-octaveShift)
-                   : "";
+      const prefixOct = octaveShift > 0 ? "+".repeat(octaveShift)
+                     : octaveShift < 0 ? "-".repeat(-octaveShift)
+                     : "";
 
-      return prefix + tonicParam;
+      const prefixSemi = semitoneShift ? String(semitoneShift) : "";
+
+      return prefixSemi + prefixOct + tonicParam;
     }
 
     function readInitialKeySigFromXml(xml) {
@@ -947,7 +979,10 @@
           ? allowedTonics[Math.floor(Math.random() * allowedTonics.length)]
           : "";
 
+        // Reset per-tune nudges
         octaveShift = 0;
+        semitoneShift = 0;
+
         await renderCurrent();
       } catch (err) {
         console.error(err);
@@ -955,8 +990,10 @@
       }
     }
 
-    async function octaveUp()   { octaveShift += 1; await renderCurrent(); }
-    async function octaveDown() { octaveShift -= 1; await renderCurrent(); }
+    async function octaveUp()      { octaveShift += 1; await renderCurrent(); }
+    async function octaveDown()    { octaveShift -= 1; await renderCurrent(); }
+    async function halfStepUp()    { semitoneShift += 1; await renderCurrent(); }
+    async function halfStepDown()  { semitoneShift -= 1; await renderCurrent(); }
 
     // ------------------------------
     // Discover tunes
@@ -1067,17 +1104,23 @@
             document.getElementById('octUpBtn').disabled   = false;
             document.getElementById('octDownBtn').disabled = false;
 
+            document.getElementById('enharmonicBtn').disabled = false;
+            document.getElementById('halfUpBtn').disabled = false;
+            document.getElementById('halfDownBtn').disabled = false;
+
             document.getElementById('spacingPlusBtn').disabled  = false;
             document.getElementById('spacingMinusBtn').disabled = false;
 
             document.getElementById('musicPlusBtn').disabled  = false;
             document.getElementById('musicMinusBtn').disabled = false;
 
-            document.getElementById('enharmonicBtn').disabled = false;
-
             document.getElementById('randomBtn').addEventListener('click', showRandomTune);
+
             document.getElementById('octUpBtn').addEventListener('click',  octaveUp);
             document.getElementById('octDownBtn').addEventListener('click', octaveDown);
+
+            document.getElementById('halfUpBtn').addEventListener('click',  halfStepUp);
+            document.getElementById('halfDownBtn').addEventListener('click', halfStepDown);
 
             document.getElementById('spacingPlusBtn').addEventListener('click', () => spacingChange(+SPACING_STEP));
             document.getElementById('spacingMinusBtn').addEventListener('click', () => spacingChange(-SPACING_STEP));
