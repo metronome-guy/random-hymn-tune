@@ -25,7 +25,7 @@
         <annot type="meterGroup">Triple</annot>
 
                     <!-- ******Collection *********-->
-        <identifier type="collection">Hymnal 1982</identifier>
+   
         <identifier type="collection">GH favorite</identifier>
       </work>
     </workDesc>
@@ -212,4 +212,5 @@
   </music>
 
 </mei>
+
 
