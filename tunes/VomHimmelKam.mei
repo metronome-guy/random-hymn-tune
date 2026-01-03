@@ -4,7 +4,7 @@
     <fileDesc>
       <titleStmt>
                  <!-- ***Title*** -->
-        <title>Nun Komm der Heiden Heiland</title>
+        <title>Vom Himmel Kam</title>
       </titleStmt>
       <pubStmt>
         <respStmt><resp>Generated example</resp></respStmt>
@@ -16,7 +16,7 @@
     <workDesc>
       <work>
                    <!-- ******Title******** -->
-        <title>Nun Komm der Heiden Heiland</title>
+        <title>Vom Himmel Kam</title>
 
              <!-- ******Key (in lowercase) and Mode (in lowercase)****** -->
         <key pname="g" mode="minor"/>
@@ -196,4 +196,5 @@
   </music>
 
 </mei>
+
 
