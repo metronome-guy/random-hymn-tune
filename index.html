@@ -18,6 +18,8 @@
       --btn-red-hover: #b71c1c;
       --btn-pink: #ff6fb3;
       --btn-pink-hover: #ff4fa3;
+      --btn-gray: #666;
+      --btn-gray-hover: #444;
     }
 
     body {
@@ -60,10 +62,31 @@
     #optionsBar {
       display: flex; align-items: flex-start; gap: var(--panel-gap); flex-wrap: wrap; margin-bottom: 8px;
     }
-    .panel { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: var(--panel-pad); display: inline-flex; align-items: center; gap: 10px; }
+    .panel {
+      background: #fff; border: 1px solid #ddd; border-radius: 8px;
+      padding: var(--panel-pad); display: inline-flex; align-items: flex-start; gap: 10px;
+    }
     .panel legend { font-weight: 700; font-size: 0.9rem; margin-right: 6px; }
+
     #exPanel { flex-basis: 100%; }
-    .row  { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .row { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .panel-tools {
+      display: inline-flex;
+      gap: 6px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .tool-btn {
+      padding: 4px 8px;
+      font-size: 0.82rem;
+      border-radius: 6px;
+      background: var(--btn-gray);
+      color: #fff;
+      border: 1px solid transparent;
+    }
+    .tool-btn:hover { background: var(--btn-gray-hover); }
 
     .chk-label {
       display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem;
@@ -134,33 +157,74 @@
     </div>
   </div>
 
-  <!-- MOVED UP: title + music now above the option panels -->
+  <!-- Title + music ABOVE the option panels -->
   <div id="titleBar" aria-live="polite">Title: —</div>
   <div id="viewer"><div id="svg"></div></div>
 
   <div id="optionsBar">
     <fieldset class="panel" id="keysPanel">
-      <legend>Key range</legend>
+      <legend>
+        Key range
+        <span class="panel-tools">
+          <button class="tool-btn" type="button" id="keysAllBtn"  title="Select all key ranges">all</button>
+          <button class="tool-btn" type="button" id="keysNoneBtn" title="Select no key ranges">none</button>
+        </span>
+      </legend>
       <div class="row key-range" id="keysRangeRow"></div>
     </fieldset>
 
     <fieldset class="panel" id="exPanel">
-      <legend>Exclude</legend>
+      <legend>
+        Exclude
+        <span class="panel-tools">
+          <button class="tool-btn" type="button" id="exAllBtn"  title="Exclude all tonics">all</button>
+          <button class="tool-btn" type="button" id="exNoneBtn" title="Exclude none">none</button>
+        </span>
+      </legend>
       <div class="row" id="exRow"></div>
     </fieldset>
 
     <fieldset class="panel" id="mmPanel">
-      <legend>Major / Minor</legend>
+      <legend>
+        Major / Minor
+        <span class="panel-tools">
+          <button class="tool-btn" type="button" id="mmAllBtn"  title="Select all">all</button>
+          <button class="tool-btn" type="button" id="mmNoneBtn" title="Select none">none</button>
+        </span>
+      </legend>
       <div class="row" id="mmRow"></div>
     </fieldset>
 
     <fieldset class="panel" id="dtPanel">
-      <legend>Duple / Triple</legend>
+      <legend>
+        Duple / Triple
+        <span class="panel-tools">
+          <button class="tool-btn" type="button" id="dtAllBtn"  title="Select all">all</button>
+          <button class="tool-btn" type="button" id="dtNoneBtn" title="Select none">none</button>
+        </span>
+      </legend>
       <div class="row" id="dtRow"></div>
     </fieldset>
 
+    <fieldset class="panel" id="meterPanel">
+      <legend>
+        Meter
+        <span class="panel-tools">
+          <button class="tool-btn" type="button" id="meterAllBtn"  title="Select all meters">all</button>
+          <button class="tool-btn" type="button" id="meterNoneBtn" title="Select none">none</button>
+        </span>
+      </legend>
+      <div class="row" id="meterRow"></div>
+    </fieldset>
+
     <fieldset class="panel" id="colPanel">
-      <legend>Collection</legend>
+      <legend>
+        Collection
+        <span class="panel-tools">
+          <button class="tool-btn" type="button" id="colAllBtn"  title="Select all collections">all</button>
+          <button class="tool-btn" type="button" id="colNoneBtn" title="Select none">none</button>
+        </span>
+      </legend>
       <div class="row" id="colRow"></div>
     </fieldset>
   </div>
@@ -176,9 +240,9 @@
     const accidentalsSelected = new Set([1]); // default include 1 accidental
     const labelFor = k => k.replace(/#/g,"♯").replace(/b/g,"♭");
 
-    const majorMinorVals = ["Major", "Minor"];
-    const dupleTripleVals = ["Duple", "Triple"];
-    const excludeTonics   = ["C","C#","Db","D","D#","Eb","E","F","F#","Gb","G","G#","Ab","A","Bb","B","Cb"];
+    const majorMinorVals   = ["Major", "Minor"];
+    const dupleTripleVals  = ["Duple", "Triple"];
+    const excludeTonics    = ["C","C#","Db","D","D#","Eb","E","F","F#","Gb","G","G#","Ab","A","Bb","B","Cb"];
 
     let vrvToolkit = null;
     let currentFile = null;
@@ -192,10 +256,10 @@
     const ENHARMONIC_MAP = { "C#":"Db", "Db":"C#", "F#":"Gb", "Gb":"F#" };
 
     const originalMeiCache = {};   // filename -> MEI text
-    const metadataCache   = {};    // filename -> parsed tags (with version)
+    const metadataCache    = {};   // filename -> parsed tags (with version)
 
     const MEI_NS = "http://www.music-encoding.org/ns/mei";
-    const METADATA_CACHE_VERSION = 4; // dynamic collection UI
+    const METADATA_CACHE_VERSION = 5; // now includes meterSig string list
 
     // --- ENGRAVING OPTIONS ---
     const baseOptions = {
@@ -259,14 +323,20 @@
     }
 
     // ------------------------------
-    // UI builders
+    // UI helpers
     // ------------------------------
     function clearRow(containerId) {
       const row = document.getElementById(containerId);
       while (row.firstChild) row.removeChild(row.firstChild);
     }
 
-    function addPlainCheckboxes(containerId, values, defaultChecked = true) {
+    function setAllCheckboxes(containerId, checked) {
+      document.querySelectorAll(`#${containerId} input[type="checkbox"]`).forEach(el => {
+        if (!el.disabled) el.checked = !!checked;
+      });
+    }
+
+    function addPlainCheckboxes(containerId, values, defaultChecked = true, labelTransform = null) {
       const row = document.getElementById(containerId);
       values.forEach(val => {
         const id = `${containerId}_${String(val).replace(/[^A-Za-z0-9]/g,'_')}`;
@@ -275,7 +345,7 @@
         const cb = document.createElement('input');
         cb.type = 'checkbox'; cb.id = id; cb.value = val; cb.checked = defaultChecked;
         const span = document.createElement('span');
-        span.textContent = val;
+        span.textContent = labelTransform ? labelTransform(val) : val;
         label.appendChild(cb); label.appendChild(span);
         row.appendChild(label);
       });
@@ -287,6 +357,11 @@
         .forEach(el => { if (el.checked) out.push(el.value); });
       return out;
     }
+
+    // ------------------------------
+    // Key range buttons + select all/none
+    // ------------------------------
+    const keyRangeButtons = new Map(); // n -> button
 
     function addAccidentalRangeButtons(containerId) {
       const row = document.getElementById(containerId);
@@ -301,9 +376,22 @@
           else { accidentalsSelected.add(n); btn.classList.add('active'); }
         });
         row.appendChild(btn);
+        keyRangeButtons.set(n, btn);
       }
     }
 
+    function keyRangeSelectAll() {
+      for (let n = 0; n <= 7; n++) accidentalsSelected.add(n);
+      for (let n = 0; n <= 7; n++) keyRangeButtons.get(n)?.classList.add('active');
+    }
+    function keyRangeSelectNone() {
+      accidentalsSelected.clear();
+      for (let n = 0; n <= 7; n++) keyRangeButtons.get(n)?.classList.remove('active');
+    }
+
+    // ------------------------------
+    // Exclude checkboxes
+    // ------------------------------
     function addExcludeCheckboxes(containerId, values) {
       const row = document.getElementById(containerId);
       values.forEach(val => {
@@ -390,7 +478,7 @@
       }
       if (lines.length === 0) return null;
 
-      const md = { keyMode: "", keyTonic: "", meterGroup: "", collection: "", collections: [], title: "" };
+      const md = { keyMode: "", keyTonic: "", meterGroup: "", meterSig: "", collection: "", collections: [], title: "" };
       for (const line of lines) {
         let mm = line.match(/^key\s*:\s*([A-Ga-g])([#bB])?\s+(major|minor)\s*$/i);
         if (mm) { md.keyTonic = mm[1].toUpperCase() + ((mm[2] || "").replace("B","b")); md.keyMode = mm[3].toLowerCase(); continue; }
@@ -404,6 +492,9 @@
         mm = line.match(/^meterGroup\s*:\s*(duple|triple)\s*$/i);
         if (mm) { md.meterGroup = mm[1][0].toUpperCase() + mm[1].slice(1).toLowerCase(); continue; }
 
+        mm = line.match(/^meterSig\s*:\s*(\d+)\s*\/\s*(\d+)\s*$/i);
+        if (mm) { md.meterSig = `${mm[1]}/${mm[2]}`; continue; }
+
         mm = line.match(/^collection\s*:\s*(.+)$/i);
         if (mm) {
           const c = mm[1].trim();
@@ -416,20 +507,29 @@
         if (mm) { md.title = mm[1].trim(); continue; }
       }
 
-      const hasSomething = ["keyMode","keyTonic","meterGroup","collection","title"].some(k => md[k]);
+      const hasSomething = ["keyMode","keyTonic","meterGroup","meterSig","collection","title"].some(k => md[k]);
       return hasSomething ? md : null;
     }
 
     // ------------------------------
-    // Meter group from MEI
+    // MeterSig + MeterGroup from MEI
     // ------------------------------
+    function meterSigFromXml(xml) {
+      const meters = allByTagNS(xml, "meterSig");
+      const mSig = meters.length ? meters[0] : null;
+      const count = (mSig?.getAttribute("count") || "").trim();
+      const unit  = (mSig?.getAttribute("unit")  || "").trim();
+      if (count && unit) return `${count}/${unit}`;
+      return "";
+    }
+
     function meterGroupFromXml(xml) {
       const meters = allByTagNS(xml, "meterSig");
       const mSig = meters.length ? meters[0] : null;
       const count = Number(mSig?.getAttribute("count") || "");
       if (!Number.isFinite(count) || count <= 0) return "Duple";
       if (count === 3) return "Triple";
-      if (count > 3 && count % 3 === 0) return "Triple";
+      if (count > 3 && count % 3 === 0) return "Triple"; // 6/4, 6/8, 9/8, 12/8...
       return "Duple";
     }
 
@@ -456,6 +556,7 @@
 
       const fromComments = parseCommentMetadataFromXml(xml);
       if (fromComments) {
+        if (!fromComments.meterSig)   fromComments.meterSig   = meterSigFromXml(xml);
         if (!fromComments.meterGroup) fromComments.meterGroup = meterGroupFromXml(xml);
 
         if (!fromComments.collections || fromComments.collections.length === 0) {
@@ -486,18 +587,19 @@
       const collections = collectionsFromXml(xml);
       const collection  = collections.length ? collections[0] : "";
 
+      const meterSig   = meterSigFromXml(xml);
       const meterGroup = meterGroupFromXml(xml);
 
       const titleEl = firstByTagNS(xml, "title");
       const title = (titleEl?.textContent || "").trim();
 
-      const out = { keyMode, keyTonic, collection, collections, meterGroup, title, __v: METADATA_CACHE_VERSION };
+      const out = { keyMode, keyTonic, collection, collections, meterSig, meterGroup, title, __v: METADATA_CACHE_VERSION };
       metadataCache[fileName] = out;
       return out;
     }
 
     // ------------------------------
-    // Build collections UI dynamically
+    // Build dynamic Collection UI
     // ------------------------------
     async function buildCollectionsUIFromAllTunes() {
       clearRow("colRow");
@@ -520,6 +622,43 @@
       }
 
       addPlainCheckboxes("colRow", list, true);
+    }
+
+    // ------------------------------
+    // Build dynamic Meter UI (from <meterSig count/unit>)
+    // ------------------------------
+    async function buildMetersUIFromAllTunes() {
+      clearRow("meterRow");
+
+      const set = new Set();
+      for (const f of tuneFiles) {
+        try {
+          const md = await getMetadata(f);
+          if (md.meterSig) set.add(md.meterSig);
+        } catch (e) {}
+      }
+
+      const list = Array.from(set).sort((a,b) => {
+        // numeric sort by count then unit if possible
+        const am = a.match(/^(\d+)\/(\d+)$/);
+        const bm = b.match(/^(\d+)\/(\d+)$/);
+        if (am && bm) {
+          const ac = Number(am[1]), au = Number(am[2]);
+          const bc = Number(bm[1]), bu = Number(bm[2]);
+          if (ac !== bc) return ac - bc;
+          return au - bu;
+        }
+        return a.localeCompare(b);
+      });
+
+      if (list.length === 0) {
+        addPlainCheckboxes("meterRow", ["(no meters found)"], true);
+        const el = document.querySelector(`#meterRow input[type="checkbox"]`);
+        if (el) el.disabled = true;
+        return;
+      }
+
+      addPlainCheckboxes("meterRow", list, true);
     }
 
     // ------------------------------
@@ -703,6 +842,15 @@
     }
 
     // ------------------------------
+    // Responsive page width
+    // ------------------------------
+    function computeResponsivePageWidth() {
+      const viewer = document.getElementById('viewer');
+      const w = viewer.clientWidth;
+      return Math.max(1400, Math.floor(w * 2.25));
+    }
+
+    // ------------------------------
     // Rendering
     // ------------------------------
     async function renderCurrent() {
@@ -745,12 +893,6 @@
       }
     }
 
-    function computeResponsivePageWidth() {
-      const viewer = document.getElementById('viewer');
-      const w = viewer.clientWidth;
-      return Math.max(1400, Math.floor(w * 2.25));
-    }
-
     function setStatus(fileName, keyShown, titleText = "") {
       const tuneName = (fileName && fileName !== "—") ? fileName.split('/').pop().replace(/\.mei$/i,'') : "—";
       const keyText  = keyShown && keyShown.trim ? keyShown : "—";
@@ -770,9 +912,10 @@
     async function pickRandomFilteredTune() {
       if (!tuneFiles || tuneFiles.length === 0) throw new Error("No tunes found.");
 
-      const mmSelected = getChecked('mmRow');
-      const dtSelected = getChecked('dtRow');
-      const colSelected= getChecked('colRow');
+      const mmSelected    = getChecked('mmRow');
+      const dtSelected    = getChecked('dtRow');
+      const meterSelected = getChecked('meterRow');
+      const colSelected   = getChecked('colRow');
 
       const candidates = [];
       for (const f of tuneFiles) {
@@ -784,12 +927,16 @@
 
           const dtOk  = dtSelected.length === 0 ? true : dtSelected.includes(md.meterGroup);
 
+          const meterOk = meterSelected.length === 0
+            ? true
+            : (md.meterSig ? meterSelected.includes(md.meterSig) : false);
+
           const tuneCollections = (md.collections && md.collections.length) ? md.collections : (md.collection ? [md.collection] : []);
           const colOk = colSelected.length === 0
             ? true
             : tuneCollections.some(c => colSelected.includes(c));
 
-          if (mmOk && dtOk && colOk) candidates.push(f);
+          if (mmOk && dtOk && meterOk && colOk) candidates.push(f);
         } catch (e) {
           console.warn("Skipping unreadable MEI:", f, e);
         }
@@ -903,8 +1050,28 @@
       await discoverTunes();
       if (!tuneFiles || tuneFiles.length === 0) setStatus("—", "No tunes found.", "");
 
-      // Build collection UI from actual MEI files
+      // Build dynamic lists from actual MEI files
       await buildCollectionsUIFromAllTunes();
+      await buildMetersUIFromAllTunes();
+
+      // Hook up Select all / none
+      document.getElementById('keysAllBtn').addEventListener('click', keyRangeSelectAll);
+      document.getElementById('keysNoneBtn').addEventListener('click', keyRangeSelectNone);
+
+      document.getElementById('exAllBtn').addEventListener('click',   () => setAllCheckboxes('exRow', true));
+      document.getElementById('exNoneBtn').addEventListener('click',  () => setAllCheckboxes('exRow', false));
+
+      document.getElementById('mmAllBtn').addEventListener('click',   () => setAllCheckboxes('mmRow', true));
+      document.getElementById('mmNoneBtn').addEventListener('click',  () => setAllCheckboxes('mmRow', false));
+
+      document.getElementById('dtAllBtn').addEventListener('click',   () => setAllCheckboxes('dtRow', true));
+      document.getElementById('dtNoneBtn').addEventListener('click',  () => setAllCheckboxes('dtRow', false));
+
+      document.getElementById('meterAllBtn').addEventListener('click',  () => setAllCheckboxes('meterRow', true));
+      document.getElementById('meterNoneBtn').addEventListener('click', () => setAllCheckboxes('meterRow', false));
+
+      document.getElementById('colAllBtn').addEventListener('click',  () => setAllCheckboxes('colRow', true));
+      document.getElementById('colNoneBtn').addEventListener('click', () => setAllCheckboxes('colRow', false));
 
       const verovioUrl = 'https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js?v=latest';
       try { await loadScript(verovioUrl); }
