@@ -9,11 +9,9 @@
       --panel-gap: 8px;
       --panel-pad: 8px;
 
-      /* Active selection gold (for checked boxes + active key-range buttons) */
       --gold: #FFC600;
       --gold-border: #d7a900;
 
-      /* Light gold for ALL/NONE buttons */
       --gold-lite: #FFEFAD;
       --gold-lite-border: #E6D48A;
       --gold-lite-hover: #FFE68A;
@@ -85,7 +83,6 @@
       vertical-align: middle;
     }
 
-    /* ALL/NONE buttons: pale gold */
     .tool-btn {
       padding: 4px 8px;
       font-size: 0.82rem;
@@ -228,12 +225,7 @@
   <footer><p>created for the University of Iowa Organ Studio</p></footer>
 
   <script>
-    // ------------------------------
-    // Config & state
-    // ------------------------------
     let tuneFiles = [];
-
-    // DEFAULT: 0#/0♭ selected
     const accidentalsSelected = new Set([0]);
 
     const labelFor = k => k.replace(/#/g,"♯").replace(/b/g,"♭");
@@ -243,14 +235,11 @@
 
     let vrvToolkit = null;
     let currentFile = null;
-    let currentTargetKey = ""; // tonic spelling (may be sharps/flats)
+    let currentTargetKey = "";
     let currentMode = "";
     let originalTonic = "";
-
-    // user octave nudges (keep these)
     let octaveShift = 0;
 
-    // enharmonic preference + explicit pair flipping
     let preferFlats = false;
 
     const ENHARMONIC_PAIRS = [
@@ -264,13 +253,12 @@
       ENHARMONIC_PAIRS.flatMap(([a,b]) => [[a,b],[b,a]])
     );
 
-    const originalMeiCache = {};   // filename -> MEI text
-    const metadataCache    = {};   // filename -> parsed tags (with version)
+    const originalMeiCache = {};
+    const metadataCache    = {};
 
     const MEI_NS = "http://www.music-encoding.org/ns/mei";
-    const METADATA_CACHE_VERSION = 8;
+    const METADATA_CACHE_VERSION = 9;
 
-    // --- ENGRAVING OPTIONS ---
     const baseOptions = {
       scale: 44,
       pageWidth: 2200,
@@ -290,30 +278,15 @@
       spacingLyrics: 6
     };
 
-    // ------------------------------
-    // Bounds & steps
-    // ------------------------------
-    const SCALE_MIN = 30;
-    const SCALE_MAX = 200;
-    const SCALE_STEP = 2;
-
-    const SPACING_MIN = 0.08;
-    const SPACING_MAX = 0.80;
-    const SPACING_STEP = 0.01;
+    const SCALE_MIN = 30, SCALE_MAX = 200, SCALE_STEP = 2;
+    const SPACING_MIN = 0.08, SPACING_MAX = 0.80, SPACING_STEP = 0.01;
 
     function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
-
     function debounce(fn, delay = 120) {
       let t = null;
-      return (...args) => {
-        clearTimeout(t);
-        t = setTimeout(() => fn(...args), delay);
-      };
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
     }
 
-    // ------------------------------
-    // Namespace-safe helpers
-    // ------------------------------
     function nodelistToArray(nl) { return Array.prototype.slice.call(nl || []); }
     function allByTagNS(xml, tag) { return nodelistToArray(xml.getElementsByTagNameNS(MEI_NS, tag)); }
     function firstByTagNS(xml, tag) {
@@ -321,9 +294,6 @@
       return nl && nl.length ? nl[0] : null;
     }
 
-    // ------------------------------
-    // UI helpers
-    // ------------------------------
     function clearRow(containerId) {
       const row = document.getElementById(containerId);
       while (row.firstChild) row.removeChild(row.firstChild);
@@ -357,11 +327,7 @@
       return out;
     }
 
-    // ------------------------------
-    // Key range buttons + select all/none
-    // ------------------------------
-    const keyRangeButtons = new Map(); // n -> button
-
+    const keyRangeButtons = new Map();
     function addAccidentalRangeButtons(containerId) {
       const row = document.getElementById(containerId);
       for (let n = 0; n <= 7; n++) {
@@ -378,7 +344,6 @@
         keyRangeButtons.set(n, btn);
       }
     }
-
     function keyRangeSelectAll() {
       for (let n = 0; n <= 7; n++) accidentalsSelected.add(n);
       for (let n = 0; n <= 7; n++) keyRangeButtons.get(n)?.classList.add('active');
@@ -388,9 +353,6 @@
       for (let n = 0; n <= 7; n++) keyRangeButtons.get(n)?.classList.remove('active');
     }
 
-    // ------------------------------
-    // Exclude checkboxes
-    // ------------------------------
     function addExcludeCheckboxes(containerId, values) {
       const row = document.getElementById(containerId);
       values.forEach(val => {
@@ -405,9 +367,6 @@
       });
     }
 
-    // ------------------------------
-    // Status badges
-    // ------------------------------
     function updateScaleBadge() {
       const badge = document.getElementById('scaleBadge');
       if (badge) badge.textContent = `Scale: ${baseOptions.scale}`;
@@ -421,19 +380,11 @@
         badge.title = `Linear: ${lin}, Non-linear: ${non}`;
       }
     }
-
-    // ------------------------------
-    // Controls
-    // ------------------------------
     function musicSizeChange(delta) {
       const next = clamp(baseOptions.scale + delta, SCALE_MIN, SCALE_MAX);
-      if (next !== baseOptions.scale) {
-        baseOptions.scale = next;
-        renderCurrent();
-      }
+      if (next !== baseOptions.scale) { baseOptions.scale = next; renderCurrent(); }
       updateScaleBadge();
     }
-
     function spacingChange(delta) {
       const nextLinear     = clamp(baseOptions.spacingLinear     + delta, SPACING_MIN, SPACING_MAX);
       const nextNonLinear  = clamp(baseOptions.spacingNonLinear  + delta, SPACING_MIN, SPACING_MAX);
@@ -445,9 +396,6 @@
       updateSpacingBadge();
     }
 
-    // ------------------------------
-    // MEI fetch
-    // ------------------------------
     async function fetchMei(fileName) {
       if (!originalMeiCache[fileName]) {
         const res = await fetch(fileName, { cache: 'no-cache' });
@@ -457,9 +405,6 @@
       return originalMeiCache[fileName];
     }
 
-    // ------------------------------
-    // Comment metadata parser
-    // ------------------------------
     function parseCommentMetadataFromXml(xmlDoc) {
       if (!xmlDoc || !xmlDoc.documentElement) return null;
 
@@ -481,16 +426,12 @@
       for (const line of lines) {
         let mm = line.match(/^key\s*:\s*([A-Ga-g])([#bB])?\s+(major|minor)\s*$/i);
         if (mm) { md.keyTonic = mm[1].toUpperCase() + ((mm[2] || "").replace("B","b")); md.keyMode = mm[3].toLowerCase(); continue; }
-
         mm = line.match(/^keyTonic\s*:\s*([A-Ga-g])([#bB])?\s*$/i);
         if (mm) { md.keyTonic = mm[1].toUpperCase() + ((mm[2] || "").replace("B","b")); continue; }
-
         mm = line.match(/^keyMode\s*:\s*(major|minor)\s*$/i);
         if (mm) { md.keyMode = mm[1].toLowerCase(); continue; }
-
         mm = line.match(/^meterSig\s*:\s*(\d+)\s*\/\s*(\d+)\s*$/i);
         if (mm) { md.meterSig = `${mm[1]}/${mm[2]}`; continue; }
-
         mm = line.match(/^collection\s*:\s*(.+)$/i);
         if (mm) {
           const c = mm[1].trim();
@@ -498,7 +439,6 @@
           if (!md.collection && c) md.collection = c;
           continue;
         }
-
         mm = line.match(/^title\s*:\s*(.+)$/i);
         if (mm) { md.title = mm[1].trim(); continue; }
       }
@@ -507,9 +447,6 @@
       return hasSomething ? md : null;
     }
 
-    // ------------------------------
-    // MeterSig from MEI
-    // ------------------------------
     function meterSigFromXml(xml) {
       const meters = allByTagNS(xml, "meterSig");
       const mSig = meters.length ? meters[0] : null;
@@ -519,9 +456,6 @@
       return "";
     }
 
-    // ------------------------------
-    // Collections from MEI (ALL of them)
-    // ------------------------------
     function collectionsFromXml(xml) {
       const identifiers = allByTagNS(xml, "identifier");
       return identifiers
@@ -530,9 +464,6 @@
         .filter(Boolean);
     }
 
-    // ------------------------------
-    // Metadata reader
-    // ------------------------------
     async function getMetadata(fileName) {
       const cached = metadataCache[fileName];
       if (cached && cached.__v === METADATA_CACHE_VERSION) return cached;
@@ -582,12 +513,8 @@
       return out;
     }
 
-    // ------------------------------
-    // Build dynamic Collection UI
-    // ------------------------------
     async function buildCollectionsUIFromAllTunes() {
       clearRow("colRow");
-
       const set = new Set();
       for (const f of tuneFiles) {
         try {
@@ -596,7 +523,6 @@
           cols.forEach(c => set.add(c));
         } catch (e) {}
       }
-
       const list = Array.from(set).sort((a,b) => a.localeCompare(b));
       if (list.length === 0) {
         addPlainCheckboxes("colRow", ["(no collections found)"], true);
@@ -604,16 +530,11 @@
         if (el) el.disabled = true;
         return;
       }
-
       addPlainCheckboxes("colRow", list, true);
     }
 
-    // ------------------------------
-    // Build dynamic Meter UI
-    // ------------------------------
     async function buildMetersUIFromAllTunes() {
       clearRow("meterRow");
-
       const set = new Set();
       for (const f of tuneFiles) {
         try {
@@ -621,7 +542,6 @@
           if (md.meterSig) set.add(md.meterSig);
         } catch (e) {}
       }
-
       const list = Array.from(set).sort((a,b) => {
         const am = a.match(/^(\d+)\/(\d+)$/);
         const bm = b.match(/^(\d+)\/(\d+)$/);
@@ -633,20 +553,15 @@
         }
         return a.localeCompare(b);
       });
-
       if (list.length === 0) {
         addPlainCheckboxes("meterRow", ["(no meters found)"], true);
         const el = document.querySelector(`#meterRow input[type="checkbox"]`);
         if (el) el.disabled = true;
         return;
       }
-
       addPlainCheckboxes("meterRow", list, true);
     }
 
-    // ------------------------------
-    // Strip MEI title so it doesn't render in SVG
-    // ------------------------------
     function stripMeiTitle(meiText) {
       try {
         const xml = new DOMParser().parseFromString(meiText, "application/xml");
@@ -661,25 +576,34 @@
       }
     }
 
-    // ------------------------------
-    // Pitch / semitone helpers (for Half-step buttons)
-    // ------------------------------
+    // ---- Half-step spelling (NO B#, A#, E#) ----
     const PITCH_INDEX = {
       "C":0,"C#":1,"Db":1,"D":2,"D#":3,"Eb":3,"E":4,"F":5,
       "F#":6,"Gb":6,"G":7,"G#":8,"Ab":8,"A":9,"A#":10,"Bb":10,"B":11,"Cb":11
     };
-
-    const SHARP_BY_INDEX = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-    const FLAT_BY_INDEX  = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","Cb"];
 
     function tonicToPc(tonic) {
       const t = String(tonic || "");
       return (t in PITCH_INDEX) ? PITCH_INDEX[t] : null;
     }
 
+    // IMPORTANT: even in "sharp" mode, we force safe spellings:
+    // pc 0 -> C (never B#)
+    // pc 5 -> F (never E#)
+    // pc 10 -> Bb (never A#)
     function pickSpellingForPc(pc) {
       const idx = ((pc % 12) + 12) % 12;
-      return preferFlats ? FLAT_BY_INDEX[idx] : SHARP_BY_INDEX[idx];
+
+      if (idx === 0) return "C";
+      if (idx === 5) return "F";
+      if (idx === 10) return "Bb";
+
+      const sharp = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"][idx];
+      const flat  = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","Cb"][idx];
+
+      // Prefer flat spelling if requested; otherwise sharp spelling.
+      // This still won’t produce A# because idx 10 handled above.
+      return preferFlats ? flat : sharp;
     }
 
     function shiftTonicBySemitone(tonic, delta) {
@@ -689,26 +613,17 @@
       return pickSpellingForPc(next);
     }
 
-    // If tonic is one of our explicit enharmonic pairs, force it to current preference
     function toPreferredSpelling(tonic) {
       if (!tonic) return "";
       const t = String(tonic);
       if (!ENHARMONIC_MAP[t]) return t;
-
-      // Find the pair for this tonic
       const pair = ENHARMONIC_PAIRS.find(([a,b]) => a === t || b === t);
       if (!pair) return t;
-
-      // In each pair, we treat:
-      //  - first as "sharp-side" (except B/Cb where first is B)
-      //  - second as "flat-side"
       const [sharpSide, flatSide] = pair;
       return preferFlats ? flatSide : sharpSide;
     }
 
-    // ------------------------------
-    // Key signature helpers
-    // ------------------------------
+    // ---- Key signatures / transpose ----
     const KEY_SIG_BY_TONIC = {
       "C":  { major:{t:"none",n:0}, minor:{t:"f",n:3} },
       "G":  { major:{t:"s",n:1},   minor:{t:"f",n:2} },
@@ -718,9 +633,6 @@
       "B":  { major:{t:"s",n:5},   minor:{t:"s",n:2} },
       "F#": { major:{t:"s",n:6},   minor:{t:"s",n:3} },
       "C#": { major:{t:"s",n:7},   minor:{t:"s",n:4} },
-      "G#": { major:null,          minor:{t:"s",n:5} },
-      "D#": { major:null,          minor:{t:"s",n:6} },
-      "A#": { major:null,          minor:{t:"s",n:7} },
 
       "F":  { major:{t:"f",n:1},   minor:{t:"f",n:4} },
       "Bb": { major:{t:"f",n:2},   minor:{t:"f",n:5} },
@@ -778,7 +690,6 @@
     function applyStartingKeyToMei(meiText, tonic, mode) {
       const { sig } = keySigFor(tonic, mode);
       const xml = new DOMParser().parseFromString(meiText, "application/xml");
-
       const targets = [...allByTagNS(xml, "scoreDef"), ...allByTagNS(xml, "staffDef")];
       targets.forEach(el => {
         if (el.hasAttribute("key.sig")) el.removeAttribute("key.sig");
@@ -790,14 +701,11 @@
         } else {
           el.setAttribute("keysig", "0");
         }
-
         if (mode) el.setAttribute("key.mode", mode);
       });
-
       return new XMLSerializer().serializeToString(xml);
     }
 
-    // Verovio tonic encoding for transpose option
     function tonicToVerovioTransposeTonic(tonic) {
       const m = String(tonic || "").match(/^([A-Ga-g])([#bB])?$/);
       if (!m) return "";
@@ -808,8 +716,6 @@
       return pname + accid;
     }
 
-    // Stable transpose: target tonic for major; relative-major tonic for minor.
-    // Half-step buttons now work by changing currentTargetKey itself.
     function computeTransposeOption() {
       if (!currentTargetKey) {
         const prefixOct = octaveShift > 0 ? "+".repeat(octaveShift)
@@ -819,12 +725,8 @@
       }
 
       let tonicForVerovio = currentTargetKey;
+      if (currentMode === "minor") tonicForVerovio = relativeMajorForMinorTonic(tonicForVerovio);
 
-      if (currentMode === "minor") {
-        tonicForVerovio = relativeMajorForMinorTonic(tonicForVerovio);
-      }
-
-      // apply preference spelling for the pairs we support
       tonicForVerovio = toPreferredSpelling(tonicForVerovio);
 
       const tonicParam = tonicToVerovioTransposeTonic(tonicForVerovio);
@@ -863,25 +765,18 @@
       return found || "";
     }
 
-    // ------------------------------
-    // Responsive page width
-    // ------------------------------
     function computeResponsivePageWidth() {
       const viewer = document.getElementById('viewer');
       const w = viewer.clientWidth;
       return Math.max(1400, Math.floor(w * 2.25));
     }
 
-    // ------------------------------
-    // Rendering
-    // ------------------------------
     async function renderCurrent() {
       if (!currentFile || !vrvToolkit) return;
 
       let meiData = await fetchMei(currentFile);
       meiData = stripMeiTitle(meiData);
 
-      // Ensure original key signature is present so Verovio’s transpose stays sane
       if (originalTonic) {
         const modeStr = currentMode === "minor" ? "minor" : "major";
         meiData = applyStartingKeyToMei(meiData, originalTonic, modeStr);
@@ -923,15 +818,9 @@
       document.getElementById('statusTune').textContent = `File: ${tuneName}`;
       document.getElementById('statusKey').textContent  = `Key: ${keyText}`;
       const titleBar = document.getElementById('titleBar');
-      if (titleBar) {
-        titleBar.textContent = `Title: ${titleStr}`;
-        titleBar.title = titleStr;
-      }
+      if (titleBar) { titleBar.textContent = `Title: ${titleStr}`; titleBar.title = titleStr; }
     }
 
-    // ------------------------------
-    // Filtering & selection
-    // ------------------------------
     async function pickRandomFilteredTune() {
       if (!tuneFiles || tuneFiles.length === 0) throw new Error("No tunes found.");
 
@@ -989,9 +878,7 @@
           ? allowedTonics[Math.floor(Math.random() * allowedTonics.length)]
           : "";
 
-        // reset per-tune nudges
         octaveShift = 0;
-
         await renderCurrent();
       } catch (err) {
         console.error(err);
@@ -1002,12 +889,9 @@
     async function octaveUp()   { octaveShift += 1; await renderCurrent(); }
     async function octaveDown() { octaveShift -= 1; await renderCurrent(); }
 
-    // Half-step buttons: *change the currentTargetKey by one semitone* and re-render.
-    // This guarantees true half-step motion and automatically updates status key.
     async function halfStepUp() {
       if (!currentTargetKey) currentTargetKey = originalTonic || "C";
       currentTargetKey = shiftTonicBySemitone(currentTargetKey, +1);
-      // after semitone shift, apply preferred spelling for supported pairs
       currentTargetKey = toPreferredSpelling(currentTargetKey);
       await renderCurrent();
     }
@@ -1018,9 +902,6 @@
       await renderCurrent();
     }
 
-    // ------------------------------
-    // Discover tunes
-    // ------------------------------
     async function discoverTunes() {
       try {
         const res = await fetch(`tunes.json?_=${Date.now()}`, { cache: 'no-cache' });
@@ -1061,9 +942,6 @@
       console.warn('No tunes found (manifest missing and directory listing empty).');
     }
 
-    // ------------------------------
-    // Verovio loader (JS/WASM)
-    // ------------------------------
     function loadScript(src) {
       return new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -1074,9 +952,6 @@
       });
     }
 
-    // ------------------------------
-    // Init
-    // ------------------------------
     async function init() {
       addAccidentalRangeButtons("keysRangeRow");
       addExcludeCheckboxes("exRow", excludeTonics);
@@ -1149,10 +1024,7 @@
 
             document.getElementById('enharmonicBtn').addEventListener('click', async () => {
               preferFlats = !preferFlats;
-
-              // If current key is one of our supported pairs, flip its spelling to match preference.
               if (currentTargetKey) currentTargetKey = toPreferredSpelling(currentTargetKey);
-
               await renderCurrent();
             });
 
