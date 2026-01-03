@@ -8,8 +8,16 @@
     :root {
       --panel-gap: 8px;
       --panel-pad: 8px;
+
+      /* Active selection gold (for checked boxes + active key-range buttons) */
       --gold: #FFC600;
       --gold-border: #d7a900;
+
+      /* Light gold for ALL/NONE buttons (intentionally lighter than --gold) */
+      --gold-lite: #FFEFAD;
+      --gold-lite-border: #E6D48A;
+      --gold-lite-hover: #FFE68A;
+
       --btn-blue: #0a64dc;
       --btn-blue-hover: #084fb0;
       --btn-lightblue: #5ab6ff;
@@ -18,6 +26,7 @@
       --btn-red-hover: #b71c1c;
       --btn-pink: #ff6fb3;
       --btn-pink-hover: #ff4fa3;
+
       --btn-gray: #666;
       --btn-gray-hover: #444;
     }
@@ -78,15 +87,19 @@
       margin-left: 8px;
       vertical-align: middle;
     }
+
+    /* ALL/NONE buttons: pale gold */
     .tool-btn {
       padding: 4px 8px;
       font-size: 0.82rem;
       border-radius: 6px;
-      background: var(--btn-gray);
-      color: #fff;
-      border: 1px solid transparent;
+      background: var(--gold-lite);
+      color: #3b2f00;
+      border: 1px solid var(--gold-lite-border);
+      cursor: pointer;
     }
-    .tool-btn:hover { background: var(--btn-gray-hover); }
+    .tool-btn:hover { background: var(--gold-lite-hover); }
+    .tool-btn:active { transform: translateY(0.5px); }
 
     .chk-label {
       display: inline-flex; align-items: center; gap: 6px; font-size: 0.95rem;
@@ -185,25 +198,8 @@
     </fieldset>
 
     <fieldset class="panel" id="mmPanel">
-      <legend>
-        Major / Minor
-        <span class="panel-tools">
-          <button class="tool-btn" type="button" id="mmAllBtn"  title="Select all">all</button>
-          <button class="tool-btn" type="button" id="mmNoneBtn" title="Select none">none</button>
-        </span>
-      </legend>
+      <legend>Major / Minor</legend>
       <div class="row" id="mmRow"></div>
-    </fieldset>
-
-    <fieldset class="panel" id="dtPanel">
-      <legend>
-        Duple / Triple
-        <span class="panel-tools">
-          <button class="tool-btn" type="button" id="dtAllBtn"  title="Select all">all</button>
-          <button class="tool-btn" type="button" id="dtNoneBtn" title="Select none">none</button>
-        </span>
-      </legend>
-      <div class="row" id="dtRow"></div>
     </fieldset>
 
     <fieldset class="panel" id="meterPanel">
@@ -237,11 +233,12 @@
     // ------------------------------
     let tuneFiles = [];
 
-    const accidentalsSelected = new Set([1]); // default include 1 accidental
+    // DEFAULT: 0#/0♭ selected
+    const accidentalsSelected = new Set([0]);
+
     const labelFor = k => k.replace(/#/g,"♯").replace(/b/g,"♭");
 
     const majorMinorVals   = ["Major", "Minor"];
-    const dupleTripleVals  = ["Duple", "Triple"];
     const excludeTonics    = ["C","C#","Db","D","D#","Eb","E","F","F#","Gb","G","G#","Ab","A","Bb","B","Cb"];
 
     let vrvToolkit = null;
@@ -259,7 +256,7 @@
     const metadataCache    = {};   // filename -> parsed tags (with version)
 
     const MEI_NS = "http://www.music-encoding.org/ns/mei";
-    const METADATA_CACHE_VERSION = 5; // now includes meterSig string list
+    const METADATA_CACHE_VERSION = 6; // minor UI changes only
 
     // --- ENGRAVING OPTIONS ---
     const baseOptions = {
@@ -478,7 +475,7 @@
       }
       if (lines.length === 0) return null;
 
-      const md = { keyMode: "", keyTonic: "", meterGroup: "", meterSig: "", collection: "", collections: [], title: "" };
+      const md = { keyMode: "", keyTonic: "", meterSig: "", collection: "", collections: [], title: "" };
       for (const line of lines) {
         let mm = line.match(/^key\s*:\s*([A-Ga-g])([#bB])?\s+(major|minor)\s*$/i);
         if (mm) { md.keyTonic = mm[1].toUpperCase() + ((mm[2] || "").replace("B","b")); md.keyMode = mm[3].toLowerCase(); continue; }
@@ -488,9 +485,6 @@
 
         mm = line.match(/^keyMode\s*:\s*(major|minor)\s*$/i);
         if (mm) { md.keyMode = mm[1].toLowerCase(); continue; }
-
-        mm = line.match(/^meterGroup\s*:\s*(duple|triple)\s*$/i);
-        if (mm) { md.meterGroup = mm[1][0].toUpperCase() + mm[1].slice(1).toLowerCase(); continue; }
 
         mm = line.match(/^meterSig\s*:\s*(\d+)\s*\/\s*(\d+)\s*$/i);
         if (mm) { md.meterSig = `${mm[1]}/${mm[2]}`; continue; }
@@ -507,12 +501,12 @@
         if (mm) { md.title = mm[1].trim(); continue; }
       }
 
-      const hasSomething = ["keyMode","keyTonic","meterGroup","meterSig","collection","title"].some(k => md[k]);
+      const hasSomething = ["keyMode","keyTonic","meterSig","collection","title"].some(k => md[k]);
       return hasSomething ? md : null;
     }
 
     // ------------------------------
-    // MeterSig + MeterGroup from MEI
+    // MeterSig from MEI
     // ------------------------------
     function meterSigFromXml(xml) {
       const meters = allByTagNS(xml, "meterSig");
@@ -521,16 +515,6 @@
       const unit  = (mSig?.getAttribute("unit")  || "").trim();
       if (count && unit) return `${count}/${unit}`;
       return "";
-    }
-
-    function meterGroupFromXml(xml) {
-      const meters = allByTagNS(xml, "meterSig");
-      const mSig = meters.length ? meters[0] : null;
-      const count = Number(mSig?.getAttribute("count") || "");
-      if (!Number.isFinite(count) || count <= 0) return "Duple";
-      if (count === 3) return "Triple";
-      if (count > 3 && count % 3 === 0) return "Triple"; // 6/4, 6/8, 9/8, 12/8...
-      return "Duple";
     }
 
     // ------------------------------
@@ -556,8 +540,7 @@
 
       const fromComments = parseCommentMetadataFromXml(xml);
       if (fromComments) {
-        if (!fromComments.meterSig)   fromComments.meterSig   = meterSigFromXml(xml);
-        if (!fromComments.meterGroup) fromComments.meterGroup = meterGroupFromXml(xml);
+        if (!fromComments.meterSig) fromComments.meterSig = meterSigFromXml(xml);
 
         if (!fromComments.collections || fromComments.collections.length === 0) {
           fromComments.collections = collectionsFromXml(xml);
@@ -587,13 +570,12 @@
       const collections = collectionsFromXml(xml);
       const collection  = collections.length ? collections[0] : "";
 
-      const meterSig   = meterSigFromXml(xml);
-      const meterGroup = meterGroupFromXml(xml);
+      const meterSig = meterSigFromXml(xml);
 
       const titleEl = firstByTagNS(xml, "title");
       const title = (titleEl?.textContent || "").trim();
 
-      const out = { keyMode, keyTonic, collection, collections, meterSig, meterGroup, title, __v: METADATA_CACHE_VERSION };
+      const out = { keyMode, keyTonic, collection, collections, meterSig, title, __v: METADATA_CACHE_VERSION };
       metadataCache[fileName] = out;
       return out;
     }
@@ -639,7 +621,6 @@
       }
 
       const list = Array.from(set).sort((a,b) => {
-        // numeric sort by count then unit if possible
         const am = a.match(/^(\d+)\/(\d+)$/);
         const bm = b.match(/^(\d+)\/(\d+)$/);
         if (am && bm) {
@@ -913,7 +894,6 @@
       if (!tuneFiles || tuneFiles.length === 0) throw new Error("No tunes found.");
 
       const mmSelected    = getChecked('mmRow');
-      const dtSelected    = getChecked('dtRow');
       const meterSelected = getChecked('meterRow');
       const colSelected   = getChecked('colRow');
 
@@ -925,8 +905,6 @@
           const mmTag = (md.keyMode?.toLowerCase() === "minor") ? "Minor" : "Major";
           const mmOk  = mmSelected.length === 0 ? true : mmSelected.includes(mmTag);
 
-          const dtOk  = dtSelected.length === 0 ? true : dtSelected.includes(md.meterGroup);
-
           const meterOk = meterSelected.length === 0
             ? true
             : (md.meterSig ? meterSelected.includes(md.meterSig) : false);
@@ -936,7 +914,7 @@
             ? true
             : tuneCollections.some(c => colSelected.includes(c));
 
-          if (mmOk && dtOk && meterOk && colOk) candidates.push(f);
+          if (mmOk && meterOk && colOk) candidates.push(f);
         } catch (e) {
           console.warn("Skipping unreadable MEI:", f, e);
         }
@@ -1045,7 +1023,6 @@
       addAccidentalRangeButtons("keysRangeRow");
       addExcludeCheckboxes("exRow", excludeTonics);
       addPlainCheckboxes("mmRow", majorMinorVals, true);
-      addPlainCheckboxes("dtRow", dupleTripleVals, true);
 
       await discoverTunes();
       if (!tuneFiles || tuneFiles.length === 0) setStatus("—", "No tunes found.", "");
@@ -1060,12 +1037,6 @@
 
       document.getElementById('exAllBtn').addEventListener('click',   () => setAllCheckboxes('exRow', true));
       document.getElementById('exNoneBtn').addEventListener('click',  () => setAllCheckboxes('exRow', false));
-
-      document.getElementById('mmAllBtn').addEventListener('click',   () => setAllCheckboxes('mmRow', true));
-      document.getElementById('mmNoneBtn').addEventListener('click',  () => setAllCheckboxes('mmRow', false));
-
-      document.getElementById('dtAllBtn').addEventListener('click',   () => setAllCheckboxes('dtRow', true));
-      document.getElementById('dtNoneBtn').addEventListener('click',  () => setAllCheckboxes('dtRow', false));
 
       document.getElementById('meterAllBtn').addEventListener('click',  () => setAllCheckboxes('meterRow', true));
       document.getElementById('meterNoneBtn').addEventListener('click', () => setAllCheckboxes('meterRow', false));
