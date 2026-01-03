@@ -19,7 +19,7 @@
         <title>Nun Komm der Heiden Heiland</title>
 
              <!-- ******Key (in lowercase) and Mode (in lowercase)****** -->
-        <key pname="a" mode="minor"/>
+        <key pname="g" mode="minor"/>
 
              <!-- ******Duple or Triple (capitalized) *********-->
         <annot type="meterGroup">Duple</annot>
@@ -196,3 +196,4 @@
   </music>
 
 </mei>
+
