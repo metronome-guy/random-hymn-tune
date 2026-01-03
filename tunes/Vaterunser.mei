@@ -73,7 +73,7 @@
                 <note xml:id="m2_n1" pname="f" oct="4" dur="4"/>
                 <note xml:id="m2_n2" pname="e" oct="4" dur="4"/>
                 <note xml:id="m2_n3" pname="d" oct="4" dur="4"/>
-                <note xml:id="m2_n4" pname="a" oct="5" dur="4"/>
+                <note xml:id="m2_n4" pname="a" oct="4" dur="4"/>
               </layer></staff>
               <fermata startid="#m2_n3" place="above"/>
             </measure>
@@ -191,3 +191,4 @@
   </music>
 
 </mei>
+
