@@ -19,7 +19,7 @@
         <title>Valet Dir</title>
 
              <!-- ******Key (in lowercase) and Mode (in lowercase)****** -->
-        <key pname="d" mode="major"/>
+        <key pname="c" mode="major"/>
 
              <!-- ******Duple or Triple (capitalized) *********-->
         <annot type="meterGroup">Duple</annot>
@@ -41,112 +41,133 @@
                      <!-- ******Time signature *********-->
                 <meterSig count="4" unit="4"/>
                      <!-- ******Key signature *********-->
-                <keySig sig="2s"/>
+                <keySig sig="0s"/>
                           <!-- ******Key  *********-->
-                <key pname="d" mode="major"/>
+                <key pname="c" mode="major"/>
               </staffDef>
             </staffGrp>
           </scoreDef>
 
-   <section>
+  <section>
 
-            <!-- m1: fis4 g a a -->
+            <!-- pickup (partial 2): c2 (starts on middle C = C4) -->
+            <measure n="0" metcon="false">
+              <staff n="1"><layer n="1">
+                <note xml:id="m0_n1" pname="c" oct="4" dur="2"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m1: g'4 g a b -->
             <measure n="1">
               <staff n="1"><layer n="1">
-                <note xml:id="m1_n1" pname="f" oct="4" dur="4"/>
+                <note xml:id="m1_n1" pname="g" oct="4" dur="4"/>
                 <note xml:id="m1_n2" pname="g" oct="4" dur="4"/>
                 <note xml:id="m1_n3" pname="a" oct="4" dur="4"/>
-                <note xml:id="m1_n4" pname="a" oct="4" dur="4"/>
+                <note xml:id="m1_n4" pname="b" oct="4" dur="4"/>
               </layer></staff>
             </measure>
 
-            <!-- m2: d, e fis2 fermata -->
+            <!-- m2: c2 c4 e -->
             <measure n="2">
               <staff n="1"><layer n="1">
-                <note xml:id="m2_n1" pname="d" oct="4" dur="4"/>
-                <note xml:id="m2_n2" pname="e" oct="4" dur="4"/>
-                <note xml:id="m2_n3" pname="f" oct="4" dur="2"/>
+                <note xml:id="m2_n1" pname="c" oct="5" dur="2"/>
+                <note xml:id="m2_n2" pname="c" oct="5" dur="4"/>
+                <note xml:id="m2_n3" pname="e" oct="5" dur="4"/>
               </layer></staff>
-              <fermata startid="#m2_n3" place="above"/>
             </measure>
 
-            <!-- m3: b4 cis d fis, -->
+            <!-- m3: d c a b -->
             <measure n="3">
               <staff n="1"><layer n="1">
-                <note xml:id="m3_n1" pname="b" oct="4" dur="4"/>
+                <note xml:id="m3_n1" pname="d" oct="5" dur="4"/>
                 <note xml:id="m3_n2" pname="c" oct="5" dur="4"/>
-                <note xml:id="m3_n3" pname="d" oct="5" dur="4"/>
-                <note xml:id="m3_n4" pname="f" oct="4" dur="4"/>
+                <note xml:id="m3_n3" pname="a" oct="4" dur="4"/>
+                <note xml:id="m3_n4" pname="b" oct="4" dur="4"/>
               </layer></staff>
             </measure>
 
-            <!-- m4: e2 d2 fermata  :|. -->
-            <measure n="4" right="rptend">
-              <staff n="1"><layer n="1">
-                <note xml:id="m4_n1" pname="e" oct="4" dur="2"/>
-                <note xml:id="m4_n2" pname="d" oct="4" dur="2"/>
-              </layer></staff>
-              <fermata startid="#m4_n2" place="above"/>
-            </measure>
+    <measure n="4">
+  <staff n="1"><layer n="1">
+    <note xml:id="m4_n1" pname="c" oct="5" dur="2"/>
+    <rest dur="4"/>
+    <note xml:id="m4_n2" pname="c" oct="5" dur="4"/>
+  </layer></staff>
 
-            <!-- m5: a'4 e fis2  (dropped an octave) -->
+  
+</measure>
+
+            <!-- m5: e e d c -->
             <measure n="5">
               <staff n="1"><layer n="1">
-                <note xml:id="m5_n1" pname="a" oct="4" dur="4"/>
-                <note xml:id="m5_n2" pname="e" oct="4" dur="4"/>
-                <note xml:id="m5_n3" pname="f" oct="4" dur="2"/>
+                <note xml:id="m5_n1" pname="e" oct="5" dur="4"/>
+                <note xml:id="m5_n2" pname="e" oct="5" dur="4"/>
+                <note xml:id="m5_n3" pname="d" oct="5" dur="4"/>
+                <note xml:id="m5_n4" pname="c" oct="5" dur="4"/>
               </layer></staff>
             </measure>
 
-            <!-- m6: b4 fis gis2  (dropped an octave) -->
+            <!-- m6: b2 g4 g4 -->
             <measure n="6">
               <staff n="1"><layer n="1">
-                <note xml:id="m6_n1" pname="b" oct="4" dur="4"/>
-                <note xml:id="m6_n2" pname="f" oct="4" dur="4"/>
-                <note xml:id="m6_n3" pname="g" accid="s" oct="4" dur="2"/>
+                <note xml:id="m6_n1" pname="b" oct="4" dur="2"/>
+                <note xml:id="m6_n2" pname="g" oct="4" dur="4"/>
+                <note xml:id="m6_n3" pname="g" oct="4" dur="4"/>
               </layer></staff>
             </measure>
 
-            <!-- m7: a4 e fis8 gis8 a4  (dropped an octave) -->
+            <!-- m7: c b a a -->
             <measure n="7">
               <staff n="1"><layer n="1">
-                <note xml:id="m7_n1" pname="a" oct="4" dur="4"/>
-                <note xml:id="m7_n2" pname="e" oct="4" dur="4"/>
-                <beam>
-                  <note xml:id="m7_n3" pname="f" oct="4" dur="8"/>
-                  <note xml:id="m7_n4" pname="g" accid="s" oct="4" dur="8"/>
-                </beam>
-                <note xml:id="m7_n5" pname="a" oct="4" dur="4"/>
+                <note xml:id="m7_n1" pname="c" oct="5" dur="4"/>
+                <note xml:id="m7_n2" pname="b" oct="4" dur="4"/>
+                <note xml:id="m7_n3" pname="a" oct="4" dur="4"/>
+                <note xml:id="m7_n4" pname="a" oct="4" dur="4"/>
               </layer></staff>
             </measure>
 
-            <!-- m8: a gis a2 fermata  (dropped an octave) -->
+            <!-- m8: g2 r4 g4 -->
             <measure n="8">
               <staff n="1"><layer n="1">
-                <note xml:id="m8_n1" pname="a" oct="4" dur="4"/>
-                <note xml:id="m8_n2" pname="g" accid="s" oct="4" dur="4"/>
-                <note xml:id="m8_n3" pname="a" oct="4" dur="2"/>
+                <note xml:id="m8_n1" pname="g" oct="4" dur="2"/>
+                <rest dur="4"/>
+                <note xml:id="m8_n2" pname="g" oct="4" dur="4"/>
               </layer></staff>
-              <fermata startid="#m8_n3" place="above"/>
             </measure>
 
-            <!-- m9: b cis d fis,  (dropped an octave) -->
+            <!-- m9: e f g a -->
             <measure n="9">
               <staff n="1"><layer n="1">
-                <note xml:id="m9_n1" pname="b" oct="4" dur="4"/>
-                <note xml:id="m9_n2" pname="c" oct="5" dur="4"/>
-                <note xml:id="m9_n3" pname="d" oct="5" dur="4"/>
-                <note xml:id="m9_n4" pname="f" oct="4" dur="4"/>
+                <note xml:id="m9_n1" pname="e" oct="4" dur="4"/>
+                <note xml:id="m9_n2" pname="f" oct="4" dur="4"/>
+                <note xml:id="m9_n3" pname="g" oct="4" dur="4"/>
+                <note xml:id="m9_n4" pname="a" oct="4" dur="4"/>
               </layer></staff>
             </measure>
 
-            <!-- m10: e2 d2 fermata  ||  (dropped an octave) -->
-            <measure n="10" right="dbl">
+            <!-- m10: g2 e4 g4 -->
+            <measure n="10">
               <staff n="1"><layer n="1">
-                <note xml:id="m10_n1" pname="e" oct="4" dur="2"/>
-                <note xml:id="m10_n2" pname="d" oct="4" dur="2"/>
+                <note xml:id="m10_n1" pname="g" oct="4" dur="2"/>
+                <note xml:id="m10_n2" pname="e" oct="4" dur="4"/>
+                <note xml:id="m10_n3" pname="g" oct="4" dur="4"/>
               </layer></staff>
-              <fermata startid="#m10_n2" place="above"/>
+            </measure>
+
+            <!-- m11: f e e d -->
+            <measure n="11">
+              <staff n="1"><layer n="1">
+                <note xml:id="m11_n1" pname="f" oct="4" dur="4"/>
+                <note xml:id="m11_n2" pname="e" oct="4" dur="4"/>
+                <note xml:id="m11_n3" pname="e" oct="4" dur="4"/>
+                <note xml:id="m11_n4" pname="d" oct="4" dur="4"/>
+              </layer></staff>
+            </measure>
+
+            <!-- m12 (3 beats because of pickup): c2  || -->
+            <measure n="12" right="dbl">
+              <staff n="1"><layer n="1">
+                <note xml:id="m12_n1" pname="c" oct="4" dur="2"/>
+              </layer></staff>
             </measure>
 
           </section>
@@ -159,3 +180,4 @@
   </music>
 
 </mei>
+
